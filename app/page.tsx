@@ -19,7 +19,11 @@ export default function Home() {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchTerm , setSearchTerm] = useState('');
   const [selectedScreen , setSelectedScreen] = useState('Samsung Galaxy S9');
+  const [selectVisibility , setSelectVisibility]  = useState('All Components');
 
+  const handleSelectVisibility = (e:{ target: { value: React.SetStateAction<string>; }; }) => {
+    setSelectVisibility(e.target.value);
+  }
   const handleSelectScreenChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setSelectedScreen(e.target.value);
   };
@@ -170,7 +174,7 @@ const handleAssetClick = (imageName: string) => {
             <div>
               <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleProjectClick}>Project</div>
               {showProject && 
-                <div className="absolute w-[26rem] bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1">
+                <div className="absolute w-[26rem] bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
                   <button className="font-[system-ui] border w-96 border-b-1 border-t-0 border-l-0 border-r-0 flex m-1 hover:text-black">My project</button>
                   <button className="font-[system-ui] w-96 flex m-1 hover:text-black">New project</button>
                   <button className="font-[system-ui] w-96 flex m-1 hover:text-black">Save project</button>
@@ -182,9 +186,9 @@ const handleAssetClick = (imageName: string) => {
                 </div>}
             </div>
             <div>
-              <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleTestClick}>Test</div>
+              <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer " onClick={handleTestClick}>Test</div>
               {showTest && 
-                <div className="absolute w-64 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1">
+                <div className="absolute w-64 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
                   <button className="font-[system-ui] flex w-60 m-1 hover:text-black">Connect to Companion</button>
                   <button className="font-[system-ui] border border-b-1 border-t-0 border-l-0 border-r-0 w-96 flex m-1 hover:text-black">Connect via USB</button>
                   <button className="font-[system-ui] w-60 flex m-1 hover:text-black">Reset Connection</button>
@@ -194,7 +198,7 @@ const handleAssetClick = (imageName: string) => {
             <div>
               <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleExportClick}>Export</div>
               {showExport && 
-                <div className="absolute w-60 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1">
+                <div className="absolute w-60 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
                   <button className="font-[system-ui] flex w-60 m-1 hover:text-black">Android App (.apk)</button>
                   <button className="font-[system-ui] w-60 flex m-1 hover:text-black">Android App Bundle (.aab)</button>
                 </div>}
@@ -202,7 +206,7 @@ const handleAssetClick = (imageName: string) => {
             <div>
               <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleHelpClick}>Help</div>
               {showHelp && 
-                <div className="absolute w-60 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1">
+                <div className="absolute w-60 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
                   <button className="font-[system-ui] border border-b-1 border-t-0 border-l-0 border-r-0 w-96 flex m-1 hover:text-black">About Altcode</button>
                   <button className="font-[system-ui] flex w-60 m-1 hover:text-black">Report an issue</button>
                   <button className="font-[system-ui] w-60 flex m-1 hover:text-black">Release notes</button>
@@ -327,7 +331,7 @@ const handleAssetClick = (imageName: string) => {
                     className="cursor-pointer"
                   />
                   {showAssetsUpload &&
-                    <div className="absolute top-0 left-0 w-full h-full flex flex-wrap items-center justify-center">
+                    <div className="absolute top-0 left-0 w-full h-full flex flex-wrap items-center justify-center z-30">
                       <div className="w-[38rem] h-[28rem] bg-slate-600">
                         <div className="w-full h-9 flex flex-row place-content-between p-2">
                           <p className="w-fit h-full font-[system-ui] text-white font-semibold">
@@ -548,15 +552,37 @@ const handleAssetClick = (imageName: string) => {
                     </div>
             </div>
             <div className="w-full h-[46rem] overflow-y-scroll border border-t-1 border-l-0 border-r-0 flex flex-wrap items-center justify-center pt-7 p-3">
-                      <div className="w-14 flex bg-black relative">
-                        h
+                      <div className="w-[29.4rem] h-48 flex bg-white relative z-20 top-[8.8rem] left-0 rounded-t-lg">
+                        
                       </div>
-                      <img 
-                        src="/samsungS9.png"
-                        alt="samsungS9"
-                        className="w-full z-0"
-                      />
+                      <div className="w-full z-0 relative">
+                        <img 
+                          src="/samsungS9.png"
+                          alt="samsungS9"
+                          className="w-full z-0 top-[-7rem] relative"
+                        />
+                      </div>
             </div>
+        </div>
+        {/* Components display */}
+        <div className="w-[21rem] h-full bg-slate-900 flex flex-wrap">
+                      <div className="w-full h-10 border border-l-0 border-b-1 border-t-0 flex flex-wrap items-center gap-4">
+                      <div className="w-52 h-8 bg-gray-400 rounded ml-3 flex flex-wrap items-center justify-center">
+                        <select
+                            value={selectVisibility}
+                            onChange={handleSelectVisibility}
+                            className="w-52 h-6 bg-transparent text-black outline-0"
+                          >
+                            <option value="">All Components</option>
+                            <option value="option1">Visibile Components</option>
+                            <option value="option1">Non-Visible Components</option>
+                          </select>
+                      </div>
+                      <div className="w-24 h-6 flex flex-wrap bg-lime-500 place-content-end gap-3">
+                        <span className="w-fit h-fit relative">hello</span>
+                        <span className="w-fit h-fit relative">hiya</span>
+                      </div>
+                      </div>
         </div>
       </div>
     </div>
