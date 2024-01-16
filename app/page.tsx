@@ -1,6 +1,7 @@
 'use client'
+import { cp } from "fs";
 import Link from "next/link";
-import { SetStateAction , useState } from "react";
+import React , { useState } from "react";
 
 export default function Home() {
   const [showProject, setShowProject] = useState(false);
@@ -13,7 +14,28 @@ export default function Home() {
   const [inputValue , setInputValue] = useState('');
   const [option , setOptions] = useState(["Screen 1"]);
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [components, setComponents] = useState(['Button', 'Checkbox', 'Circular Progress' , 'Custom Progress' , 'Date Picker' , 'Floating Action Button' , 'Image' , 'Label' , 'Linear Progressbar' , 'List Picker' , 'Notifier' , 'Radio Button' , 'Rating Bar' , 'Slider' , 'Snackbar' , 'Spinner' , 'Spotlight' , 'State Progress Bar' , 'Switch' , 'Text Box' , 'Time Picker']);
+  const [item , setItem ] = useState(['user Interface' , 'Layout' , 'Media' , 'Drawing and Animation' , 'Maps' , 'Sensors' , 'Social' , 'Storage' , 'Utilities' , 'Dynamic Components' , 'Connectivity' , 'Google' , 'Monetization' , 'Extensions']);
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchTerm , setSearchTerm] = useState('');
+  const [selectedScreen , setSelectedScreen] = useState('Samsung Galaxy S9');
 
+  const handleSelectScreenChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+    setSelectedScreen(e.target.value);
+  };
+  const filteredComponents = components.filter((component) =>
+    component.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  console.log(searchTerm)
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.dataTransfer.setData("text/plain", index);
+  };
+  const handleSearchIconClick = () => {
+    setIsSearchActive(true);
+  };
+  const handleCloseSearchButton = () => {
+    setIsSearchActive(false);
+  }
 const handleFileChange = (event: { target: { files: any[]; }; }) => {
   const file = event.target.files[0];
   if (file) {
@@ -123,7 +145,6 @@ const handleAssetClick = (imageName: string) => {
   
   return (
     <div className='w-full h-full bg-transparent'>
-
       {/* First navBar */}
       <div className="w-full h-14 bg-slate-900 items-center flex  place-content-between text-white gap-8">
         {/*Logo Section*/}
@@ -371,18 +392,171 @@ const handleAssetClick = (imageName: string) => {
       </div>
 
       {/* Third NavBar */}
-      <div className="w-full h-full grid grid-cols-4 place-content-between bg-transparent">
-        <div className="w-56 h-full bg-slate-500">
-          hello
+      <div className="w-full h-full flex flex-wrap bg-transparent border broder-b-0 border-l-0 border-r-0 border-t-current">
+        {/* Components and Items */}
+        <div className="w-80 h-full flex flex-wrap">
+                  <div className="w-full h-10 bg-slate-900 flex flex-wrap items-center gap-3">
+                    <p className="w-fit h-fit ml-3 text-white relative">
+                      Palette
+                    </p>
+                    {isSearchActive ? (
+                        <div className="w-56 flex flex-wrap place-content-end">
+                          <input
+                            type="text"
+                            placeholder="Search..."
+                            className="border outline-none bg-transparent rounded text-white w-48"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                          />
+                          <img 
+                            src="/closeWhite.png"
+                            alt="close Image"
+                            className="cursor-pointer"
+                            onClick={handleCloseSearchButton}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-56 flex flex-wrap place-content-end">
+                          <img
+                            src="/search.svg"
+                            alt="search icon"
+                            className="w-fit h-fit cursor-pointer relative"
+                            onClick={handleSearchIconClick}
+                        />
+                        </div>
+                      )}
+                  </div>
+                  <div className="w-full h-[46rem] text-white flex flex-wrap border border-t-current border-l-0 border-r-0 border-b-0 bg-slate-900">
+                  <div className="w-14 h-full border border-t-0 border-l-0">
+                      {item.map((item, index) => (
+                        <div key={index} className="w-full h-10 bg-white rounded-r-full mt-2 flex">
+                          {item === "user Interface" && (
+                              <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                                <img src="/devices.svg" alt="userInterface" className="w-5 h-5 relative" />
+                              </div>
+                          )}
+                          {item === "Layout" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/space_dashboard.svg" alt="Layout" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Media" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/play_circle.svg" alt="Media" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Drawing and Animation" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/palette.svg" alt="Drawing and Animation" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Maps" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/explore_nearby.svg" alt="Maps" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Sensors" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/explore.svg" alt="Sensors" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Social" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/emoji_people.svg" alt="Social" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Storage" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/cloud_done.svg" alt="Storage" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Utilities" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/cases.svg" alt="Utilities" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Dynamic Components" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/code.svg" alt="Dynamic Components" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Connectivity" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/stream.svg" alt="Connectivity" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Google" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/Vector.svg" alt="Google" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          {item === "Monetization" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/monetization_on.svg" alt="Monetization" className="w-5 h-5 relative" />
+                            </div>
+                          )} 
+                          {item === "Extensions" && (
+                            <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
+                              <img src="/extension.svg" alt="Extensions" className="w-5 h-5 relative" />
+                            </div>
+                          )}
+                          <span className="hidden">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="w-[16.5rem] h-full overflow-y-scroll border border-l-0 border-t-0">
+                    {filteredComponents.map((component, index) => (
+                      <div
+                        key={index}
+                        className="w-26 h-11 mt-2 flex border m-1 flex-wrap items-center pl-3 cursor-pointer"
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                      >
+                        {component}
+                      </div>
+                    ))}
+                    </div>
+                  </div>
         </div>
-        <div>
-          hiya
-        </div>
-        <div>
-          Siya
-        </div>
-        <div>
-          Anushka
+
+        {/* Screen Display */}
+        <div className="w-[34rem] h-full border border-t-0 border-l-1 border-b-0 border-r-1 bg-slate-900">
+            <div className="w-full h-10 grid grid-cols-3 gap-4 items-center">
+                    <p className="w-fit pl-3 text-white">
+                      Viewer
+                    </p>
+
+                    {/* Different Screens */}
+                    <div className="w-72 h-8 bg-gray-400 flex flex-wrap items-center rounded">
+                      <img 
+                        src="/devices.svg"
+                        alt="devices"
+                        className="pl-3"
+                      />
+                      <select
+                        value={selectedScreen}
+                        onChange={handleSelectScreenChange}
+                        className="w-56 h-6 bg-transparent pl-2 outline-0"
+                      >
+                        <option value="">Samsung Galaxy S9</option>
+                        <option value="option1">LG Nexus 5X1</option>
+                        <option value="option2">Google Pixel 3</option>
+                        <option value="option3">Samsung Galaxy Note 5</option>
+                        <option value="option4">HTC Nexus 9</option>
+                        <option value="option5">Microsoft Surface 3</option>
+                      </select>
+                    </div>
+            </div>
+            <div className="w-full h-[46rem] overflow-y-scroll border border-t-1 border-l-0 border-r-0 flex flex-wrap items-center justify-center pt-7 p-3">
+                      <div className="w-14 flex bg-black relative">
+                        h
+                      </div>
+                      <img 
+                        src="/samsungS9.png"
+                        alt="samsungS9"
+                        className="w-full z-0"
+                      />
+            </div>
         </div>
       </div>
     </div>
