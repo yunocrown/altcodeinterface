@@ -1,7 +1,102 @@
 'use client'
-import { cp } from "fs";
 import Link from "next/link";
-import React , { useState } from "react";
+import React , { useState , useEffect , useRef, SetStateAction } from "react";
+
+const devices = {
+  'Samsung Galaxy S9' : {
+    image : '/samsungS9.png',
+    width: 360,
+    height: 640
+  },
+  'Pixel 7 Pro' : {
+    width: 360,
+    heigth: 640
+  }
+}
+function Devices({selected }) {
+  return(
+    <DeviceModel
+      selected = {selected}
+      devices = {devices}
+    >
+    </DeviceModel>
+  )
+}
+function DeviceModel({selected}) {
+  // const device = devices[selected];
+  return (
+    <div>
+      {/* <img 
+        src={device.image}
+        width={device.width}
+        height={device.height}
+      /> */}
+      <DropTargetForDevice selected={selected} />
+    </div>
+  )
+}
+function DropTargetForDevice({selected}) {
+  if (selected === 'Samsung Galaxy S9') {
+    return <S9DropTarget />
+  }
+  if (selected === 'Pixel 7 Pro') {
+    return <Pixel7ProDropTarget />
+  }
+  if (selected === 'LG Nexus 5X1' ) {
+    return <LGNexus5X1DropTarget />
+  }
+  if (selected === 'Samsung Galaxy Note 5') {
+    return <SamsungGalaxy5DropTarget />
+  }
+  if (selected === 'HTC Nexus 9') {
+    return <HTCNexusDropTarget />
+  }
+  if (selected === 'Microsoft Surface 3') {
+    return <MicrosoftSurfaceDropTarget />
+  }
+}
+function MicrosoftSurfaceDropTarget() {
+  return( 
+    <div className="w-[22.5rem] h-[47rem] bg-pink-600 items-center justify-center flex flex-wrap">
+      Sixth
+    </div>
+  )
+}
+function HTCNexusDropTarget() {
+  return( 
+    <div className="w-[22.5rem] h-[47rem] bg-slate-600 text-white items-center justify-center flex flex-wrap">
+      Fifth
+    </div>
+  )
+}
+function SamsungGalaxy5DropTarget() {
+  return( 
+    <div className="w-[22.5rem] h-[47rem] bg-lime-600 items-center justify-center flex flex-wrap">
+      Mine 
+    </div>
+  )
+}
+function LGNexus5X1DropTarget() {
+  return( 
+    <div className="w-[22.5rem] h-[47rem] bg-green-600 items-center justify-center flex flex-wrap">
+      Hiya
+    </div>
+  )
+}
+function Pixel7ProDropTarget() {
+  return( 
+    <div className="w-[22.5rem] h-[47rem] bg-pink-600 text-white items-center justify-center flex flex-wrap">
+      Hello
+    </div>
+  )
+}
+function S9DropTarget() {
+  return(
+    <div className="w-[22.5rem] h-[47rem] bg-blue-600 items-center justify-center flex flex-wrap">
+      Siya
+    </div>
+  )
+}
 
 export default function Home() {
   const [showProject, setShowProject] = useState(false);
@@ -10,22 +105,54 @@ export default function Home() {
   const [showHelp, setShowHelp] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showAssetsUpload , setShowAssetsUplaod] = useState(false);
-  const [selectedOption , setSelectedOption] = useState('');
   const [inputValue , setInputValue] = useState('');
   const [option , setOptions] = useState(["Screen 1"]);
+  const [selectedOption , setSelectedOption] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
   const [components, setComponents] = useState(['Button', 'Checkbox', 'Circular Progress' , 'Custom Progress' , 'Date Picker' , 'Floating Action Button' , 'Image' , 'Label' , 'Linear Progressbar' , 'List Picker' , 'Notifier' , 'Radio Button' , 'Rating Bar' , 'Slider' , 'Snackbar' , 'Spinner' , 'Spotlight' , 'State Progress Bar' , 'Switch' , 'Text Box' , 'Time Picker']);
   const [item , setItem ] = useState(['user Interface' , 'Layout' , 'Media' , 'Drawing and Animation' , 'Maps' , 'Sensors' , 'Social' , 'Storage' , 'Utilities' , 'Dynamic Components' , 'Connectivity' , 'Google' , 'Monetization' , 'Extensions']);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchTerm , setSearchTerm] = useState('');
-  const [selectedScreen , setSelectedScreen] = useState('Samsung Galaxy S9');
+  const [selected , setSelectedScreen] = useState('Samsung Galaxy S9');
   const [selectVisibility , setSelectVisibility]  = useState('All Components');
+  const [selectedColor, setSelectedColor] = useState('#fff');
+  const [droppedComponent, setDroppedComponent] = useState(null);
 
+
+  const handleDragEnd = (index: number | React.SetStateAction<null>) => {
+    setDroppedComponent(index);
+  }
+  const handleBackgroundColor = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+    setSelectedColor(e.target.value);
+    console.log('New Color' , selectedColor); 
+  }
+  useEffect(() => {
+    document.body.style.backgroundColor = selectedColor;
+  }, [selectedColor]);
+  const visibleComponentProperties = useRef();
+  const visibleComponentRef = useRef();
+  useEffect(() => {
+    const visibleComponent = visibleComponentRef.current;
+    if(!visibleComponent) return;
+    visibleComponent.innerHTML = selectedOption || 'Screen 1';
+    return () => {
+      visibleComponent.innerHTML = ''; 
+    }
+  }, [selectedOption]);
+  useEffect(() => {
+    const visibleComponentproperties = visibleComponentProperties.current;
+    if(!visibleComponentproperties) return;
+    visibleComponentproperties.innerHTML = selectedOption || 'Screen 1';
+    return () => {
+      visibleComponentproperties.innerHTML = '';
+    }
+  }, [selectedOption]);
   const handleSelectVisibility = (e:{ target: { value: React.SetStateAction<string>; }; }) => {
     setSelectVisibility(e.target.value);
   }
   const handleSelectScreenChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setSelectedScreen(e.target.value);
+    console.log(selected);
   };
   const filteredComponents = components.filter((component) =>
     component.toLowerCase().includes(searchTerm.toLowerCase())
@@ -40,40 +167,38 @@ export default function Home() {
   const handleCloseSearchButton = () => {
     setIsSearchActive(false);
   }
-const handleFileChange = (event: { target: { files: any[]; }; }) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const imageSrc = e.target.result;
-      const imageName = file.name;
-      localStorage.setItem(imageName , imageSrc );
-      const newImageDiv = document.createElement('div');
-      newImageDiv.className = 'w-full h-12 border flex flex-wrap uploaded-image items-center gap-2 rounded border-black cursor-pointer';
-      newImageDiv.innerHTML = `
-        <img src="${imageSrc}" alt="${imageName}" class="w-12 h-12 object-contain"/>
-        <p class="text-center text-white text-sm truncate w-56">${imageName}</p>
-      `;
-      const assetsContent = document.querySelector('.assetsContent');
-      assetsContent.appendChild(newImageDiv);
-      setUploadedImage(file);
-    };
-    reader.readAsDataURL(file);
-  }
-};
-const handleAssetClick = (imageName: string) => {
-  const imageSrc = localStorage.getItem(imageName);
-  if (imageSrc) {
-    const previewDiv = document.querySelector('.Preview');
-    if (previewDiv) {
-      previewDiv.innerHTML = `<img src="${imageSrc}" alt="${imageName}" class="w-full h-full object-contain" />`;
-    } else {
-      console.error('Preview div not found');
+  const handleFileChange = (event: { target: { files: any[]; }; }) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imageSrc = e.target.result;
+        const imageName = file.name;
+        localStorage.setItem(imageName , imageSrc );
+        const newImageDiv = document.createElement('div');
+        newImageDiv.className = 'w-full h-12 border flex flex-wrap uploaded-image items-center gap-2 rounded border-black cursor-pointer';
+        newImageDiv.innerHTML = `
+          <img src="${imageSrc}" alt="${imageName}" class="w-12 h-12 object-contain"/>
+          <p class="text-center text-white text-sm truncate w-56">${imageName}</p>
+        `;
+        const assetsContent = document.querySelector('.assetsContent');
+        assetsContent.appendChild(newImageDiv);
+        setUploadedImage(file);
+      };
+      reader.readAsDataURL(file);
     }
-  }
-};
-
-
+  };
+  const handleAssetClick = (imageName: string) => {
+    const imageSrc = localStorage.getItem(imageName);
+    if (imageSrc) {
+      const previewDiv = document.querySelector('.Preview');
+      if (previewDiv) {
+        previewDiv.innerHTML = `<img src="${imageSrc}" alt="${imageName}" class="w-full h-full object-contain" />`;
+      } else {
+        console.error('Preview div not found');
+      }
+    }
+  };
   const handleRemoveScreenClick = () => {
     const removeScreen = prompt("Please enter the screen name to be remove");
     if (removeScreen) {
@@ -219,7 +344,7 @@ const handleAssetClick = (imageName: string) => {
             <div className="font-[system-ui] font-bold text-xs rounded-lg hover:cursor-pointer border p-2 border-violet-400 w-12 h-8 flex flex-wrap items-center justify-center" onClick={handlePricingClick}>
               <span>free</span>
               {showPricing &&
-                <div className="absolute w-full h-full flex flex-wrap items-center justify-center top-0 left-0 ">
+                <div className="absolute w-full h-full flex flex-wrap items-center justify-center top-0 left-0 z-30">
                   <div className="w-[35rem] h-fit bg-slate-700 flex flex-wrap p-3 rounded-lg ">
                     <span className="text-white font-[system-ui] text-lg font-bold w-full flex text-left">Get more from Altcode. Upgarde to premimum today.</span>
                     <span className="text-white font-[system-ui] text-lg font-light w-full flex">With premimum, you can</span>
@@ -515,6 +640,7 @@ const handleAssetClick = (imageName: string) => {
                         className="w-26 h-11 mt-2 flex border m-1 flex-wrap items-center pl-3 cursor-pointer"
                         draggable
                         onDragStart={(e) => handleDragStart(e, index)}
+                        onDragEnd={() => handleDragEnd(index)}
                       >
                         {component}
                       </div>
@@ -538,30 +664,23 @@ const handleAssetClick = (imageName: string) => {
                         className="pl-3"
                       />
                       <select
-                        value={selectedScreen}
+                        value={selected}
                         onChange={handleSelectScreenChange}
                         className="w-56 h-6 bg-transparent pl-2 outline-0"
                       >
-                        <option value="">Samsung Galaxy S9</option>
-                        <option value="option1">LG Nexus 5X1</option>
-                        <option value="option2">Google Pixel 3</option>
-                        <option value="option3">Samsung Galaxy Note 5</option>
-                        <option value="option4">HTC Nexus 9</option>
-                        <option value="option5">Microsoft Surface 3</option>
+                        <option value="Samsung Galaxy S9">Samsung Galaxy S9</option>
+                        <option value="LG Nexus 5X1">LG Nexus 5X1</option>
+                        <option value="Pixel 7 Pro">Pixel 7 Pro</option>
+                        <option value="Samsung Galaxy Note 5">Samsung Galaxy Note 5</option>
+                        <option value="HTC Nexus 9">HTC Nexus 9</option>
+                        <option value="Microsoft Surface 3">Microsoft Surface 3</option>
                       </select>
                     </div>
             </div>
             <div className="w-full h-[46rem] overflow-y-scroll border border-t-1 border-l-0 border-r-0 flex flex-wrap items-center justify-center pt-7 p-3">
-                      <div className="w-[29.4rem] h-48 flex bg-white relative z-20 top-[8.8rem] left-0 rounded-t-lg">
-                        
-                      </div>
-                      <div className="w-full z-0 relative">
-                        <img 
-                          src="/samsungS9.png"
-                          alt="samsungS9"
-                          className="w-full z-0 top-[-7rem] relative"
-                        />
-                      </div>
+                      <Devices 
+                        selected={selected}
+                      />
             </div>
         </div>
         {/* Components display */}
@@ -578,10 +697,108 @@ const handleAssetClick = (imageName: string) => {
                             <option value="option1">Non-Visible Components</option>
                           </select>
                       </div>
-                      <div className="w-24 h-6 flex flex-wrap bg-lime-500 place-content-end gap-3">
-                        <span className="w-fit h-fit relative">hello</span>
-                        <span className="w-fit h-fit relative">hiya</span>
+                      <div className="w-24 h-6 flex flex-wrap items-center gap-6 ">
+                        <img 
+                          src="/border_color.svg"
+                          alt="rename"
+                          title="rename"
+                          width={20}
+                          height={20}
+                          className="cursor-pointer"
+                        />
+                        <img 
+                          src="/delete.svg"
+                          alt="delete"
+                          title="delete"
+                          width={20}
+                          height={20}
+                          className="cursor-pointer"
+                        />
                       </div>
+                      </div>
+                      <div className="w-full h-[46rem] bg-slate-900 AllComponents flex flex-wrap border border-l-0 border-t-0 border-r-0">
+                        <div ref={visibleComponentRef} className="w-72 h-11 border text-white flex flex-wrap items-center pl-4 mt-3 ml-3 rounded">
+                        
+                        </div>
+                      </div>
+        </div>
+
+        {/* Screen Properties */}
+        <div className="w-[19.95rem] h-full bg-slate-900 flex flex-wrap">
+                      <div className="w-full h-10 border border-t-0 border-l-0 border-r-0 border-b-1 flex flex-wrap items-center">
+                        <p className="w-[18rem] flex flex-wrap text-white">
+                          <span ref={visibleComponentProperties} className="w-fit ml-3 text-white mr-2"></span> 
+                        Properties
+                        </p>
+                      </div>
+                      <div className="w-full h-[46rem] border border-t-0 border-l-1 border-r-0 overflow-y-scroll">
+                        <div className="w-full h-10 flex flex-wrap items-center border border-t-0 border-l-0 border-r-0">
+                          <span className="text-white ml-3 text-sm">
+                            Common Properties
+                          </span>
+                        </div>
+                        <div className="w-full h-full flex flex-wrap justify-center">
+                          <div className="w-60 h-9 relative">
+                            <input 
+                              type="text"
+                              className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                              placeholder="About Screen"
+                            />
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
+                            <input 
+                              type="color"
+                              className="rounded-full w-6 border-none outline-none cursor-pointer"
+                            />
+                            <p className="w-fit pl-2 text-white text-sm">About Screen BGColor</p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              About Screen Light Theme
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 relative">
+                            <input 
+                              type="text"
+                              className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                              placeholder="About Screen title"
+                            />
+                          </div>
+                          <div className="w-60 h-9">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Option1" className="text-black">Left : 1</option>
+                              <option value= "Option2" className="text-black">Center : 3</option>
+                              <option value= "Option3" className="text-black">Right : 2</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Option1" className="text-black">Top : 1</option>
+                              <option value= "Option2" className="text-black">Center : 2</option>
+                              <option value= "Option3" className="text-black">Botton : 3</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
+                            <input 
+                              type="color"
+                              className="rounded-full w-6 border-none outline-none cursor-pointer"
+                              value={selectedColor}
+                              onChange={handleBackgroundColor}
+                            />
+                            <p className="w-fit pl-2 text-white text-sm">Background Color</p>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+
+                          </div>
+                        </div>  
                       </div>
         </div>
       </div>
