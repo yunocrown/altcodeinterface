@@ -5,15 +5,16 @@ import React , { useState , useEffect , useRef, SetStateAction } from "react";
 const devices = {
   'Samsung Galaxy S9' : {
     image : '/samsungS9.png',
-    width: 360,
+    width: 380,
     height: 640
   },
   'Pixel 7 Pro' : {
+    image : '/pixel7pro.png',
     width: 360,
     heigth: 640
   }
 }
-function Devices({selected }) {
+function Devices({selected , devices }) {
   return(
     <DeviceModel
       selected = {selected}
@@ -22,15 +23,15 @@ function Devices({selected }) {
     </DeviceModel>
   )
 }
-function DeviceModel({selected}) {
-  // const device = devices[selected];
+function DeviceModel({selected , devices}) {
+  const device = devices[selected];
   return (
     <div>
-      {/* <img 
+      <img 
         src={device.image}
         width={device.width}
         height={device.height}
-      /> */}
+      />
       <DropTargetForDevice selected={selected} />
     </div>
   )
@@ -85,15 +86,91 @@ function LGNexus5X1DropTarget() {
 }
 function Pixel7ProDropTarget() {
   return( 
-    <div className="w-[22.5rem] h-[47rem] bg-pink-600 text-white items-center justify-center flex flex-wrap">
-      Hello
+    <div className="w-[21.5rem] h-[12rem] items-center justify-center flex flex-wrap relative top-[-48.3rem] left-[0.6rem]">
+          {/* Top NavBar */}
+      <div className="w-full h-5 bg-blue-500 rounded-t-[7rem] flex relative top-0 flex-wrap items-center text-sm text-white place-content-end gap-1">
+        <img
+          src="/network_wifi.svg"
+          alt="wifi"
+          className="w-3 h-3"
+        />
+        <img 
+          src="/battery_6_bar.svg"
+          alt="battery"
+          className="w-4 h-3"
+        />
+        <span className="font-normal text-[0.5rem] pr-4">12:00</span>
+      </div> 
+      {/* Drop Target */}
+      <div 
+        className="w-full h-[44rem] DropTarget bg-white"
+      >
+      </div>
+      {/* Bottom Navigation */}
+      <div className="w-full h-7 bg-blue-500 rounded-b-[1rem] flex flex-wrap justify-center">
+        <div className ="w-48 h-full flex flex-wrap gap-20 justify-center" >
+          <img 
+            src="/arrow_back_ios.svg"
+            alt="Back_Arrow"
+            className="w-2"
+          />
+          <img 
+            src="/radio_button_unchecked.svg"
+            alt="home"
+            className="w-3"
+          />
+          <img 
+            src="/drag_handle.svg"
+            alt="tasks"
+            className="w-3"
+          />
+        </div>
+      </div>
     </div>
   )
 }
 function S9DropTarget() {
   return(
-    <div className="w-[22.5rem] h-[47rem] bg-blue-600 items-center justify-center flex flex-wrap">
-      Siya
+    <div className="w-[22.5rem] h-[12rem] items-center justify-center flex flex-wrap relative top-[-48.3rem] left-[0.6rem]">
+          {/* Top NavBar */}
+      <div className="w-full h-5 bg-blue-500 rounded-t-[7rem] flex relative top-0 flex-wrap items-center text-sm text-white place-content-end gap-1">
+        <img
+          src="/network_wifi.svg"
+          alt="wifi"
+          className="w-3 h-3"
+        />
+        <img 
+          src="/battery_6_bar.svg"
+          alt="battery"
+          className="w-4 h-3"
+        />
+        <span className="font-normal text-[0.5rem] pr-4">12:00</span>
+      </div> 
+      {/* Drop Target */}
+      <div 
+        className="w-full h-[43rem] DropTarget bg-white"
+      >
+      </div>
+      {/* Bottom Navigation */}
+      <div className="w-full h-7 bg-blue-500 rounded-b-[7rem] flex flex-wrap justify-center">
+        <div className ="w-48 h-full flex flex-wrap gap-20 justify-center" >
+          <img 
+            src="/arrow_back_ios.svg"
+            alt="Back_Arrow"
+            className="w-2"
+          />
+          <img 
+            src="/radio_button_unchecked.svg"
+            alt="home"
+            className="w-3"
+          />
+          <img 
+            src="/drag_handle.svg"
+            alt="tasks"
+            className="w-3"
+          />
+        </div>
+    </div>
     </div>
   )
 }
@@ -117,14 +194,13 @@ export default function Home() {
   const [selectVisibility , setSelectVisibility]  = useState('All Components');
   const [selectedColor, setSelectedColor] = useState('#fff');
   const [droppedComponent, setDroppedComponent] = useState(null);
-
+  const [showPreviewScreen , setShowPreviewScreen] = useState(false);
 
   const handleDragEnd = (index: number | React.SetStateAction<null>) => {
     setDroppedComponent(index);
   }
   const handleBackgroundColor = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setSelectedColor(e.target.value);
-    console.log('New Color' , selectedColor); 
   }
   useEffect(() => {
     document.body.style.backgroundColor = selectedColor;
@@ -152,7 +228,6 @@ export default function Home() {
   }
   const handleSelectScreenChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setSelectedScreen(e.target.value);
-    console.log(selected);
   };
   const filteredComponents = components.filter((component) =>
     component.toLowerCase().includes(searchTerm.toLowerCase())
@@ -271,18 +346,71 @@ export default function Home() {
   const handleMaybeLater = () => {
     setShowPricing(!showPricing);
   }
-  
+  const handleHoverOver = () => {
+    const item = document.querySelector(".Item");
+    const itemText = document.querySelector(".ItemText");
+    const component = document.querySelector(".Component");
+    const componentText = document.querySelector(".ComponentText");
+    const itemTextclasses = "flex"
+    const componentTextclasses = "hidden border-none"
+    const Itemclasses = "w-[16.5rem] border border-t-0 border-l-0 border-r-1 ease-in-out duration-800"
+    const Componentclasses = "w-[3.5rem] h-[46rem] overflow-y-scroll ease-in-out duration-800";
+    itemTextclasses.split(' ').forEach(c => {
+      itemText?.classList.add(c);
+    })
+    componentTextclasses.split(' ').forEach(c => {
+      componentText?.classList.add(c);
+    })
+    Itemclasses.split(' ').forEach(c => {
+      item?.classList.add(c);
+    })
+    Componentclasses.split(' ').forEach(c => {
+      component?.classList.add(c);
+    })
+  }
+  const handleHoverLeave = () => {
+    const item = document.querySelector(".Item");
+    const itemText = document.querySelector(".ItemText");
+    const component = document.querySelector(".Component");
+    const componentText = document.querySelector(".ComponentText");
+    const itemTextclasses = "flex"
+    const componentTextclasses = "hidden border-none"
+    const Itemclasses = "w-[16.5rem] border border-t-0 border-l-0 border-r-1"
+    const Componentclasses = "w-[3.5rem] h-[46rem]";
+    itemTextclasses.split(' ').forEach(c => {
+      itemText?.classList.remove(c);
+    })
+    componentTextclasses.split(' ').forEach(c => {
+      componentText?.classList.remove(c);
+    })
+    Componentclasses.split(' ').forEach(c => {
+      component?.classList.remove(c);
+    })
+    Itemclasses.split(' ').forEach(c => {
+      item?.classList.remove(c);
+    })
+  }
+  const handlePreviewButtonClick = () => {
+    setShowPreviewScreen(true);
+  }
+  const handlePreviewButtonCloseClick = () => {
+    setShowPreviewScreen(false);
+  }
+
   return (
     <div className='w-full h-full bg-transparent'>
+
       {/* First navBar */}
       <div className="w-full h-14 bg-slate-900 items-center flex  place-content-between text-white gap-8">
+
         {/*Logo Section*/}
         <div className="flex p-1 content-center gap-2 w-60">
           <img
             src={"/altcode-high-resolution-logo-color-on-transparent-background.png"}
             alt="logoImage"
-            width={40}
-            height={50}
+            width={35}
+            height={45}
+            className="ml-1"
           />
           <div className="flex font-[system-ui] gap-1 items-center flex-wrap">
             <p className="text-mid text-white font-semibold ">
@@ -293,14 +421,15 @@ export default function Home() {
             </p>
           </div>
         </div>
+        {/* Logo Section ends here*/}
 
         {/* navlinks */}
         <div className="grid grid-cols-4 gap-6 place-content-between content-center text-center items-center w-[27rem">
             <div>
-              <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleProjectClick}>Project</div>
+              <div className="p-1 h-fit hover:bg-violet-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleProjectClick}>Project</div>
               {showProject && 
-                <div className="absolute w-[26rem] bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
-                  <button className="font-[system-ui] border w-96 border-b-1 border-t-0 border-l-0 border-r-0 flex m-1 hover:text-black">My project</button>
+                <div className="absolute w-[26rem] bg-violet-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
+                  <Link href="/projects" className="font-[system-ui] border w-96 border-b-1 border-t-0 border-l-0 border-r-0 flex m-1 hover:text-black">My project</Link>
                   <button className="font-[system-ui] w-96 flex m-1 hover:text-black">New project</button>
                   <button className="font-[system-ui] w-96 flex m-1 hover:text-black">Save project</button>
                   <button className="font-[system-ui] w-96 flex m-1 hover:text-black">Save project as</button>
@@ -311,9 +440,9 @@ export default function Home() {
                 </div>}
             </div>
             <div>
-              <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer " onClick={handleTestClick}>Test</div>
+              <div className="p-1 h-fit hover:bg-violet-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer " onClick={handleTestClick}>Test</div>
               {showTest && 
-                <div className="absolute w-64 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
+                <div className="absolute w-64 bg-violet-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
                   <button className="font-[system-ui] flex w-60 m-1 hover:text-black">Connect to Companion</button>
                   <button className="font-[system-ui] border border-b-1 border-t-0 border-l-0 border-r-0 w-96 flex m-1 hover:text-black">Connect via USB</button>
                   <button className="font-[system-ui] w-60 flex m-1 hover:text-black">Reset Connection</button>
@@ -321,17 +450,17 @@ export default function Home() {
                 </div>}
             </div>
             <div>
-              <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleExportClick}>Export</div>
+              <div className="p-1 h-fit hover:bg-violet-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleExportClick}>Export</div>
               {showExport && 
-                <div className="absolute w-60 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
+                <div className="absolute w-60 bg-violet-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
                   <button className="font-[system-ui] flex w-60 m-1 hover:text-black">Android App (.apk)</button>
                   <button className="font-[system-ui] w-60 flex m-1 hover:text-black">Android App Bundle (.aab)</button>
                 </div>}
             </div>
             <div>
-              <div className="p-1 h-fit hover:bg-gray-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleHelpClick}>Help</div>
+              <div className="p-1 h-fit hover:bg-violet-700 rounded-sm font-[system-ui] font-bold text-sm cursor-pointer" onClick={handleHelpClick}>Help</div>
               {showHelp && 
-                <div className="absolute w-60 bg-gray-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
+                <div className="absolute w-60 bg-violet-700 h-fit p-1 flex flex-wrap rounded m-1 z-10">
                   <button className="font-[system-ui] border border-b-1 border-t-0 border-l-0 border-r-0 w-96 flex m-1 hover:text-black">About Altcode</button>
                   <button className="font-[system-ui] flex w-60 m-1 hover:text-black">Report an issue</button>
                   <button className="font-[system-ui] w-60 flex m-1 hover:text-black">Release notes</button>
@@ -348,7 +477,7 @@ export default function Home() {
                   <div className="w-[35rem] h-fit bg-slate-700 flex flex-wrap p-3 rounded-lg ">
                     <span className="text-white font-[system-ui] text-lg font-bold w-full flex text-left">Get more from Altcode. Upgarde to premimum today.</span>
                     <span className="text-white font-[system-ui] text-lg font-light w-full flex">With premimum, you can</span>
-                    <div className="w-full h-full bg-black p-2 rounded-lg  text-white font-[system-ui] text-base font-light flex flex-wrap">
+                    <div className="w-full h-full bg-violet-700 p-2 rounded-lg  text-white font-[system-ui] text-base font-light flex flex-wrap">
                       <li className="w-full text-left">Create unlimited number of projects</li>
                       <li className="w-full text-left">Use unlimited number of extensions</li>
                       <li className="w-full text-left">Access monetization extensions</li>
@@ -409,7 +538,7 @@ export default function Home() {
       </div>
 
       {/*Second NavBar */}
-      <div className="border-t-current border border-l-0 border-r-0 border-b-1 flex w-full h-12 bg-slate-900 text-violet-400 flex-wrap items-center gap-9 place-content-between">
+      <div className="border-t-1 border border-l-0 border-r-0 border-b-1 flex w-full h-12 bg-slate-900 text-white border-violet-400 flex-wrap items-center gap-9 place-content-between">
           {/* Project Name */}
           <div className="w-64 flex ml-3 content-center gap-1">
             <input 
@@ -425,22 +554,22 @@ export default function Home() {
               <select
                 value={selectedOption}
                 onChange={handleSelectChange}
-                className="flex flex-wrap w-full h-full bg-transparent border border-white rounded"
+                className="flex flex-wrap w-full h-full bg-transparent border border-violet-400 rounded text-sm"
               >
                 {option.map((option) => (
-                  <option key={option} value={option}>
+                  <option key={option} value={option} className="bg-violet-700">
                     {option}
                   </option>
                 ))}
               </select>
             </div>
-            <button className="w-32 border bg-transparent border-white rounded" onClick={handleAddScreenClick}>
+            <button className="w-32 border bg-transparent border-violet-400 rounded text-sm" onClick={handleAddScreenClick}>
                 Add Screen
             </button>
-            <button className="w-32 border bg-transparent border-white rounded" onClick={handleCopyScreenClick}>
+            <button className="w-32 border bg-transparent border-violet-400 rounded text-sm" onClick={handleCopyScreenClick}>
               Copy Screen
             </button>
-            <button className="w-32 border bg-transparent border-white rounded" onClick={handleRemoveScreenClick}>
+            <button className="w-32 border bg-transparent border-violet-400 rounded text-sm" onClick={handleRemoveScreenClick}>
               Remove Screen
             </button>
           </div>
@@ -471,7 +600,7 @@ export default function Home() {
                         </div>
                         <div className="w-full h-full flex flex-wrap">
                           <div className="w-80 h-full p-2 flex flex-col">
-                            <div className="w-full h-40 bg-black p-2 rounded">
+                            <div className="w-full h-40 bg-violet-700 p-2 rounded">
                               <p className="text-white font-[system-ui] text-sm">You are currently on the free plan. Upgrade to Premimum to compile apps with more than 5MB in assets. You are currently using 0MB in this project. </p>
                               <p>
                                 <Link href="#" className="w-full font-[system-ui] underline top-8 relative ">
@@ -488,7 +617,7 @@ export default function Home() {
                               <img src="" alt="previewImage" className="w-full h-full object-cover"/>
                             </div>
                             <div className="w-full h-11 flex relative top-5 rounded-sm">
-                              <label htmlFor="imageInput" className="custom-file-upload font-[system-ui] rounded bg-black w-full h-full text-white flex flex-wrap items-center justify-center relative top-8">
+                              <label htmlFor="imageInput" className="custom-file-upload font-[system-ui] rounded bg-violet-700 w-full h-full text-white flex flex-wrap items-center justify-center relative top-8">
                                 <input
                                   id="imageInput"
                                   type="file"
@@ -511,17 +640,17 @@ export default function Home() {
                 className="w-fit h-fit "
               />
               </div>
-              <button className="w-fit h-6 rounded-t-md p-1 pb-7 bg-white ">
+              <button className="w-fit h-6 rounded-t-md pb-7 bg-violet-500 top-1 flex relative text-sm p-2">
                 Designer
               </button>
-              <Link href="/components" className="w-fit h-6 rounded-t-md p-1 pb-7 hover:bg-gray-600">
+              <Link href="/components" className="w-fit h-6 rounded-t-md p-2 pb-7 hover:bg-gray-600 relative text-sm top-1">
                 Blocks 
               </Link>
           </div>
       </div>
 
       {/* Third NavBar */}
-      <div className="w-full h-full flex flex-wrap bg-transparent border broder-b-0 border-l-0 border-r-0 border-t-current">
+      <div className="w-full h-full flex flex-wrap bg-transparent border broder-b-0 border-l-0 border-r-0 border-t-1 border-violet-400">
         {/* Components and Items */}
         <div className="w-80 h-full flex flex-wrap">
                   <div className="w-full h-10 bg-slate-900 flex flex-wrap items-center gap-3">
@@ -533,7 +662,7 @@ export default function Home() {
                           <input
                             type="text"
                             placeholder="Search..."
-                            className="border outline-none bg-transparent rounded text-white w-48"
+                            className="border border-violet-400 outline-none bg-transparent rounded text-white w-48"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                           />
@@ -555,10 +684,17 @@ export default function Home() {
                         </div>
                       )}
                   </div>
-                  <div className="w-full h-[46rem] text-white flex flex-wrap border border-t-current border-l-0 border-r-0 border-b-0 bg-slate-900">
-                  <div className="w-14 h-full border border-t-0 border-l-0">
+                  <div className="w-full h-[46rem] text-white flex flex-wrap border border-t-violet-400 border-l-0 border-r-0 border-b-0 bg-slate-900">
+                  <div 
+                    className="w-14 h-full border border-violet-400 border-t-0 border-l-0 Item"
+                    onMouseEnter={handleHoverOver}
+                    onMouseLeave={handleHoverLeave}
+                  >
                       {item.map((item, index) => (
-                        <div key={index} className="w-full h-10 bg-white rounded-r-full mt-2 flex">
+                        <div 
+                          key={index} 
+                          className="w-full h-10 bg-violet-500 rounded-r-full mt-2 flex"
+                        >
                           {item === "user Interface" && (
                               <div className="w-full p-1 cursor-pointer flex flex-wrap items-center gap-2 justify-center">
                                 <img src="/devices.svg" alt="userInterface" className="w-5 h-5 relative" />
@@ -629,11 +765,11 @@ export default function Home() {
                               <img src="/extension.svg" alt="Extensions" className="w-5 h-5 relative" />
                             </div>
                           )}
-                          <span className="hidden">{item}</span>
+                          <span className="hidden ItemText">{item}</span>
                         </div>
                       ))}
                     </div>
-                    <div className="w-[16.5rem] h-full overflow-y-scroll border border-l-0 border-t-0">
+                    <div className="w-[16.5rem] h-full overflow-y-scroll border border-violet-400 border-l-0 border-t-0 Component">
                     {filteredComponents.map((component, index) => (
                       <div
                         key={index}
@@ -642,7 +778,7 @@ export default function Home() {
                         onDragStart={(e) => handleDragStart(e, index)}
                         onDragEnd={() => handleDragEnd(index)}
                       >
-                        {component}
+                        <span className="ComponentText">{component}</span>
                       </div>
                     ))}
                     </div>
@@ -650,14 +786,14 @@ export default function Home() {
         </div>
 
         {/* Screen Display */}
-        <div className="w-[34rem] h-full border border-t-0 border-l-1 border-b-0 border-r-1 bg-slate-900">
+        <div className="w-[34rem] h-full border border-violet-400 border-t-0 border-l-1 border-b-0 border-r-1 bg-slate-900">
             <div className="w-full h-10 grid grid-cols-3 gap-4 items-center">
                     <p className="w-fit pl-3 text-white">
                       Viewer
                     </p>
 
                     {/* Different Screens */}
-                    <div className="w-72 h-8 bg-gray-400 flex flex-wrap items-center rounded">
+                    <div className="w-72 h-8 bg-violet-500 flex flex-wrap items-center rounded text-sm text-white">
                       <img 
                         src="/devices.svg"
                         alt="devices"
@@ -668,33 +804,34 @@ export default function Home() {
                         onChange={handleSelectScreenChange}
                         className="w-56 h-6 bg-transparent pl-2 outline-0"
                       >
-                        <option value="Samsung Galaxy S9">Samsung Galaxy S9</option>
-                        <option value="LG Nexus 5X1">LG Nexus 5X1</option>
-                        <option value="Pixel 7 Pro">Pixel 7 Pro</option>
-                        <option value="Samsung Galaxy Note 5">Samsung Galaxy Note 5</option>
-                        <option value="HTC Nexus 9">HTC Nexus 9</option>
-                        <option value="Microsoft Surface 3">Microsoft Surface 3</option>
+                        <option className="bg-violet-700 relative " value="Samsung Galaxy S9">Samsung Galaxy S9</option>
+                        <option className="bg-violet-700 relative " value="LG Nexus 5X1">LG Nexus 5X1</option>
+                        <option className="bg-violet-700 relative " value="Pixel 7 Pro">Pixel 7 Pro</option>
+                        <option className="bg-violet-700 relative " value="Samsung Galaxy Note 5">Samsung Galaxy Note 5</option>
+                        <option className="bg-violet-700 relative " value="HTC Nexus 9">HTC Nexus 9</option>
+                        <option className="bg-violet-700 relative " value="Microsoft Surface 3">Microsoft Surface 3</option>
                       </select>
                     </div>
             </div>
-            <div className="w-full h-[46rem] overflow-y-scroll border border-t-1 border-l-0 border-r-0 flex flex-wrap items-center justify-center pt-7 p-3">
+            <div className="w-full h-[46rem] overflow-y-scroll border border-violet-400 border-t-1 border-l-0 border-r-0 flex flex-wrap items-center justify-center pt-7 p-3">
                       <Devices 
                         selected={selected}
+                        devices={devices}
                       />
             </div>
         </div>
         {/* Components display */}
         <div className="w-[21rem] h-full bg-slate-900 flex flex-wrap">
-                      <div className="w-full h-10 border border-l-0 border-b-1 border-t-0 flex flex-wrap items-center gap-4">
-                      <div className="w-52 h-8 bg-gray-400 rounded ml-3 flex flex-wrap items-center justify-center">
+                      <div className="w-full h-10 border border-violet-400 border-l-0 border-b-1 border-t-0 flex flex-wrap items-center gap-4">
+                      <div className="w-52 h-8 bg-violet-500 text-white rounded ml-3 flex flex-wrap items-center justify-center text-sm">
                         <select
                             value={selectVisibility}
                             onChange={handleSelectVisibility}
-                            className="w-52 h-6 bg-transparent text-black outline-0"
+                            className="w-52 h-6 bg-transparent outline-0"
                           >
-                            <option value="">All Components</option>
-                            <option value="option1">Visibile Components</option>
-                            <option value="option1">Non-Visible Components</option>
+                            <option className="bg-violet-700" value="">All Components</option>
+                            <option className="bg-violet-700" value="option1">Visibile Components</option>
+                            <option className="bg-violet-700" value="option2">Non-Visible Components</option>
                           </select>
                       </div>
                       <div className="w-24 h-6 flex flex-wrap items-center gap-6 ">
@@ -716,8 +853,8 @@ export default function Home() {
                         />
                       </div>
                       </div>
-                      <div className="w-full h-[46rem] bg-slate-900 AllComponents flex flex-wrap border border-l-0 border-t-0 border-r-0">
-                        <div ref={visibleComponentRef} className="w-72 h-11 border text-white flex flex-wrap items-center pl-4 mt-3 ml-3 rounded">
+                      <div className="w-full h-[46rem] bg-slate-900 AllComponents flex flex-wrap border-violet-400 border-l-0 border-t-0 border-r-0">
+                        <div ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap items-center pl-4 mt-3 ml-3 rounded" id="Screen">
                         
                         </div>
                       </div>
@@ -725,23 +862,23 @@ export default function Home() {
 
         {/* Screen Properties */}
         <div className="w-[19.95rem] h-full bg-slate-900 flex flex-wrap">
-                      <div className="w-full h-10 border border-t-0 border-l-0 border-r-0 border-b-1 flex flex-wrap items-center">
+                      <div className="w-full h-10 border border-violet-400 border-t-0 border-l-0 border-r-0 border-b-1 flex flex-wrap items-center">
                         <p className="w-[18rem] flex flex-wrap text-white">
                           <span ref={visibleComponentProperties} className="w-fit ml-3 text-white mr-2"></span> 
                         Properties
                         </p>
                       </div>
-                      <div className="w-full h-[46rem] border border-t-0 border-l-1 border-r-0 overflow-y-scroll">
-                        <div className="w-full h-10 flex flex-wrap items-center border border-t-0 border-l-0 border-r-0">
+                      <div className="w-full h-[46rem] border border-violet-400 border-t-0 border-l-1 border-r-0 overflow-y-scroll">
+                        <div className="w-full h-10 flex flex-wrap mb-3  items-center border border-t-0 border-l-0 border-r-0 border-violet-400">
                           <span className="text-white ml-3 text-sm">
                             Common Properties
                           </span>
                         </div>
-                        <div className="w-full h-full flex flex-wrap justify-center">
+                        <div className="w-full h-full flex flex-wrap justify-center gap-2">
                           <div className="w-60 h-9 relative">
                             <input 
                               type="text"
-                              className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                              className="bg-transparent border rounded h-9 w-60 text-white text-sm p-1"
                               placeholder="About Screen"
                             />
                           </div>
@@ -796,7 +933,153 @@ export default function Home() {
                             <p className="w-fit pl-2 text-white text-sm">Background Color</p>
                           </div>
                           <div className="w-60 h-9 border flex flex-wrap items-center rounded">
-
+                            <select
+                              className="w-40 h-full bg-transparent text-white text-sm pl-2"
+                            >
+                              <option value="">None</option>
+                            </select>
+                            <div className="w-[4.6rem] h-full flex flex-wrap items-center justify-center border border-t-0 border-b-0 border-r-0 gap-4">
+                              <img 
+                                src="/upload.svg"
+                                alt="uploadFiles"
+                                className="w-5 h-5 hover:bg-violet-800 rounded cursor-pointer"
+                                title="uploadFiles"
+                                onClick={handleAssetsUpload}
+                              />
+                              <img 
+                                src="/gallery_thumbnail.svg"
+                                alt="previewOption"
+                                className="w-5 h-5 hover:bg-violet-800 rounded cursor-pointer"
+                                onClick={handlePreviewButtonClick}
+                              />
+                              {showPreviewScreen &&
+                                <div className="absolute top-0 left-0 w-full h-full flex flex-wrap z-40 bg-gray-100 justify-center">
+                                  <div className="w-11/12 h-10 mt-3 bg-slate-600 flex flex-wrap items-center place-content-between rounded">
+                                    <span className="w-fit h-full text-white flex flex-wrap items-center pl-4">
+                                      Preview Screen
+                                    </span>
+                                    <img
+                                      src="closeWhite.png"
+                                      alt="close"
+                                      className="w-7 h-7 mr-4 cursor-pointer"
+                                      onClick={handlePreviewButtonCloseClick}
+                                    />
+                                  </div>
+                                  <div className="w-full h-full flex flex-wrap items-center justify-center">
+                                    <img 
+                                      src=""
+                                      alt="currentPreviewImage"
+                                      className="object-cover ImagePreview"
+                                    />
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Default" className="text-white bg-violet-700">Default</option>
+                              <option value= "Fade" className="text-white bg-violet-700">Fade</option>
+                              <option value= "Zoom" className="text-white bg-violet-700">Zoom</option>
+                              <option value= "Slide Horizontal" className="text-white bg-violet-700">Slide Horizontal</option>
+                              <option value= "Slide Vertical" className="text-white bg-violet-700">Slide Vertical</option>
+                              <option value= "None" className="text-white bg-violet-700">None</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
+                            <input 
+                              type="color"
+                              className="rounded-full w-6 border-none outline-none cursor-pointer"
+                            />
+                            <p className="w-fit pl-2 text-white text-sm">Navigation Bar Color</p>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Default" className="text-white bg-violet-700">Default</option>
+                              <option value= "Fade" className="text-white bg-violet-700">Fade</option>
+                              <option value= "Zoom" className="text-white bg-violet-700">Zoom</option>
+                              <option value= "Slide Horizontal" className="text-white bg-violet-700">Slide Horizontal</option>
+                              <option value= "Slide Vertical" className="text-white bg-violet-700">Slide Vertical</option>
+                              <option value= "None" className="text-white bg-violet-700">None</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Unspecified" className="text-white bg-violet-700">Unspecified</option>
+                              <option value= "Behind" className="text-white bg-violet-700">Behind</option>
+                              <option value= "Full Sensor" className="text-white bg-violet-700">Zoom</option>
+                              <option value= "Landscape" className="text-white bg-violet-700">Slide Horizontal</option>
+                              <option value= "No Sensor" className="text-white bg-violet-700">Slide Vertical</option>
+                              <option value= "Portrait" className="text-white bg-violet-700">None</option>
+                              <option value= "Reverse Landscape" className="text-white bg-violet-700">None</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Scrollable
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Show Menu Option
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Show Status Bar
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap">
+                              <input 
+                                type="text"
+                                className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                                placeholder="Title"
+                              />
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Unspecified" className="text-white bg-violet-700">Default</option>
+                              <option value= "Behind" className="text-white bg-violet-700">Sans Serif</option>
+                              <option value= "Full Sensor" className="text-white bg-violet-700">Monospace</option>
+                              <option value= "Landscape" className="text-white bg-violet-700">Roboto Thin</option>
+                              <option value= "No Sensor" className="text-white bg-violet-700">Roboto Regular</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap">
+                              <input 
+                                type="text"
+                                className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                                placeholder="Title Bar Subtitle"
+                              />
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Title Visible
+                            </p>
                           </div>
                         </div>  
                       </div>
