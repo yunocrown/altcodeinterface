@@ -1,23 +1,162 @@
 'use client'
 import Link from "next/link";
-import React , { useState } from "react";
+import React , { useRef, useState } from "react";
 
 const sortOptions = [
+    {
+      label: 'Name (ascending)',
+      value: 'name ascending'
+    },
+    {
+      label: 'Name (descending)',
+      value: 'name decending'
+    },
+    {
+      label: 'Date created (newest first)',
+      value: 'recently created date'
+    },
+    {
+      label: 'Date created (oldest first)',
+      value: 'oldest created date'
+    },
     {
       label: 'Date modified (Latest first)',
       value: 'date' 
     },
     {
-      label: 'Name (ascending)',
-      value: 'name'
+      label: 'Date modified (oldest first)',
+      value: 'oldest modified date'
     }
   ];
-  
+function ProjectConfiguration() {
+  return(
+    <div className="absolute w-full h-full flex flex-wrap items-center justify-center top-0 left-0 z-30">
+       <div className="w-[35rem] h-fit bg-slate-700 flex flex-wrap p-3 rounded-lg justify-center mb-4">
+        <div className="w-full h-12 flex flex-wrap place-content-start ">
+          <div className="w-full h-6 text-white font-medium text-base flex flex-wrap items-center pl-4">
+            Configure Your Project
+          </div>
+          <div className="w-full h-4 text-gray-200 font-light text-xm flex flex-wrap items-center pl-4">
+            These settings can be changed later
+          </div>
+        </div>
+        <div className="w-full h-80 flex flex-wrap">
+          <div className="w-full border rounded flex flex-wrap justify-center">
+            <input 
+              type="text"
+              placeholder="Application Name"
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm"
+            />
+            <select
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm"
+            >
+              <option>
+
+              </option>
+            </select>
+          </div>
+        </div>
+        <div className="w-full h-10 flex flex-wrap place-content-between top-3 relative">
+          <div>
+            <button
+              className="w-20 border h-8 rounded border-violet-400 flex flex-wrap items-center justify-center mr-3"
+            >
+              Back
+            </button>
+          </div>
+          <div className="w-fit flex flex-wrap gap-1">
+            <button
+              className="w-20 border h-8 rounded border-violet-400 flex flex-wrap items-center justify-center mr-3"
+            >
+              Close
+            </button>
+            <button
+              className="w-20 border h-8 rounded border-violet-400 flex flex-wrap items-center justify-center mr-3"
+            >
+              Finish
+            </button>
+          </div>
+        </div>
+       </div>
+    </div>
+  )
+}
+function Popup({setShowPopup}) {
+  const [showProjectConfiguration , setShowProjectConfiguration] = useState(true); //isko false kar dena yaad se
+  const [inputEmpty , setInputEmpty] = useState(false);
+
+  const handleCreateNextClick = (e: { stopPropagation: () => void; }) => {
+    e.stopPropagation();
+    setShowProjectConfiguration(!showProjectConfiguration);
+  }
+  const handleInputClick = (e: { stopPropagation: () => void; }) => {
+    e.stopPropagation();
+  }
+  const handleCloseButtonClick = () => {
+    setShowPopup(false);
+  }
+  const handleInputValueEntered = (e: { target: { value: string; }; }) => {
+    if(e.target.value === '') {
+      setInputEmpty(true);
+    } else {
+      setInputEmpty(false); 
+    }
+  }
+  return (
+      <div className="absolute w-full h-full flex flex-wrap items-center justify-center top-[-10rem] left-0 z-30">
+        <div className="w-[35rem] h-fit bg-slate-700 flex flex-wrap p-3 rounded-lg justify-center mb-4">
+          <img 
+            src="/newProject.svg"
+            alt="New Project"
+            width={290}
+            height={290}
+            className="mt-2" 
+          />
+          <span className="text-white mt-2 text-sm font-light w-full flex flex-wrap justify-center">
+            Give your project a new name
+          </span>
+          <input 
+            type="text"
+            placeholder="enter project name"
+            className="ProjectName w-11/12 mt-5 h-9 rounded bg-transparent border border-violet-400 text-sm text-white pl-3 outline-none"
+            onClick={handleInputClick} 
+            onChange={handleInputValueEntered}
+          />
+        <div className="w-full h-9 bg-transparent mt-4 flex flex-wrap place-content-end">
+          <button
+            className="w-20 border h-8 rounded border-violet-400 flex flex-wrap items-center justify-center mr-3"
+            onClick = {handleCloseButtonClick}
+          >
+            Close
+          </button>
+          <div
+            style={{
+              opacity: inputEmpty ? 0.5 : 1,
+              cursor: inputEmpty ? 'not-allowed' : 'pointer'  
+            }}
+            className="w-20 border h-8 rounded border-violet-400 flex flex-wrap items-center justify-center mr-3"
+            onClick={handleCreateNextClick}
+            aria-disabled = {inputEmpty}
+            role="button"
+            >
+            Create 
+            {showProjectConfiguration &&(
+              <ProjectConfiguration />
+            )}
+          </div>
+        </div>
+        </div>
+      </div>
+    );
+}
 export default function page() {
     const [showPricing , setShowPricing] = useState(false);
     const [selectedSort, setSelectedSort] = useState('date');
+    const [showPopup, setShowPopup] = useState(false);
 
-
+    const handleCreateProjectClick = () => {
+      setShowPopup(!showPopup)
+    }
     const handlePricingClick = () => {
         setShowPricing(!showPricing);
     }
@@ -122,7 +261,18 @@ export default function page() {
                 <div className="w-full h-full bg-slate-900 flex flex-wrap mt-3">
                             <div className="w-full h-full relative">
                                 <div className="w-full h-10 gap-3 relative flex pl-4">
-                                    <button className="border text-white text-sm w-36 rounded h-8 border-violet-400">Create Project</button>
+                                    <div 
+                                      className="border text-white text-sm w-36 rounded h-8 border-violet-400 flex flex-wrap items-center justify-center" 
+                                      onClick={handleCreateProjectClick}
+                                      role="button"
+                                    >
+                                        Create Project
+                                        {showPopup && (
+                                          <Popup 
+                                            setShowPopup = {setShowPopup}
+                                          />
+                                        )}
+                                    </div>
                                     <button className="border text-white text-sm w-36 rounded h-8 border-violet-400">Import Project</button>
                                     <div className="border text-white text-sm w-[20rem] h-8 border-violet-400 flex flex-wrap items-center justify-center rounded">
                                     <label>Sort by:</label>
@@ -142,6 +292,9 @@ export default function page() {
                                       ))}
                                     </select>
                                     </div>
+                                </div>
+                                <div className="w-full h-[21.68rem] bg-slate-900 border border-violet-400 border-t-1 border-l-0 border-r-0 border-b-0 ProjectDisplay flex flex-wrap flex-row gap-2 pt-4 pl-4">
+                                      
                                 </div>
                             </div>
 
