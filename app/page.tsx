@@ -1,4 +1,6 @@
 'use client'
+import { rejects } from "assert";
+import { unique } from "next/dist/build/utils";
 import Link from "next/link";
 import React , { useState , useEffect , useRef, SetStateAction } from "react";
 
@@ -130,6 +132,29 @@ function Pixel7ProDropTarget() {
   )
 }
 function S9DropTarget() {
+  const handleComponentDrop = (event: { preventDefault: () => void; dataTransfer: { getData: (arg0: string) => any; }; }) => {
+    event.preventDefault();
+    const componentType = event.dataTransfer.getData("text/plain");
+    const dropTarget = document.querySelector(".DropTarget");
+    
+    if (componentType === "Button") {
+      const buttonDroppedDiv = document.createElement("div");
+      buttonDroppedDiv.className = "w-fit h-fit text-sm border bg-violet-500 text-white"
+      buttonDroppedDiv.textContent = "Button dropped";
+      console.log("Button dropped")
+      dropTarget.appendChild(buttonDroppedDiv);
+    }
+  }
+  document.addEventListener("DOMContentLoaded",function() {
+    const dropTarget = document.querySelector(".DropTarget");
+    dropTarget.addEventListener("drop", handleComponentDrop);
+    dropTarget.addEventListener("dragover", function(event) {
+        event.preventDefault();
+    });
+  })
+  const handleComponentDragOver = (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+  }
   return(
     <div className="w-[22.5rem] h-[12rem] items-center justify-center flex flex-wrap relative top-[-48.3rem] left-[0.6rem]">
           {/* Top NavBar */}
@@ -149,6 +174,8 @@ function S9DropTarget() {
       {/* Drop Target */}
       <div 
         className="w-full h-[43rem] DropTarget bg-white"
+        onDrop={handleComponentDrop}
+        onDragOver={handleComponentDragOver}
       >
       </div>
       {/* Bottom Navigation */}
@@ -182,7 +209,6 @@ export default function Home() {
   const [showHelp, setShowHelp] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showAssetsUpload , setShowAssetsUplaod] = useState(false);
-  const [inputValue , setInputValue] = useState('');
   const [option , setOptions] = useState(["Screen 1"]);
   const [selectedOption , setSelectedOption] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -191,6 +217,7 @@ export default function Home() {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchTerm , setSearchTerm] = useState('');
   const [selected , setSelectedScreen] = useState('Samsung Galaxy S9');
+  const [screens , setScreens] = useState([]);
   const [selectVisibility , setSelectVisibility]  = useState('All Components');
   const [selectedColor, setSelectedColor] = useState('#fff');
   const [droppedComponent, setDroppedComponent] = useState(null);
@@ -232,9 +259,8 @@ export default function Home() {
   const filteredComponents = components.filter((component) =>
     component.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log(searchTerm)
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    e.dataTransfer.setData("text/plain", index);
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, componentType: string | number) => {
+    e.dataTransfer.setData("text/plain", componentType);
   };
   const handleSearchIconClick = () => {
     setIsSearchActive(true);
@@ -274,6 +300,58 @@ export default function Home() {
       }
     }
   };
+
+  {/*Screen management and storage code part*/}
+  const openDatabase = () => {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('MyAppDatabase' , 1);
+      request.onerror = () => {
+        reject('Error opening Database');
+      }
+      request.onsuccess = () => {
+        resolve(request.result);
+      }
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        const objectStore = db.createObjectStore('screens' , { keypath:'id' , autoIncrement: true});
+        objectStore.createIndex('name' , 'name' , {unique: true });
+      }
+    })
+  }
+  const addScreen = (screen) => {
+    return new Promise((resolve, reject) => {
+        openDatabase().then((db) => {
+            const transaction = db.transaction(['screens'], 'readwrite');
+            const objectStore = transaction.objectStore('screens');
+            const request = objectStore.add(screen);
+            request.onsuccess = () => {
+                resolve('Screen added successfully');
+            };
+            request.onerror = () => {
+                reject('Error adding screen');
+            };
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+const getScreens = () => {
+  return new Promise((resolve, reject) => {
+      openDatabase().then((db) => {
+          const transaction = db.transaction(['screens'], 'readonly');
+          const objectStore = transaction.objectStore('screens');
+          const request = objectStore.getAll();
+          request.onsuccess = () => {
+              resolve(request.result);
+          };
+          request.onerror = () => {
+              reject('Error retrieving screens');
+          };
+      }).catch((error) => {
+          reject(error);
+      });
+  });
+};
   const handleRemoveScreenClick = () => {
     const removeScreen = prompt("Please enter the screen name to be remove");
     if (removeScreen) {
@@ -282,6 +360,7 @@ export default function Home() {
       } else {
         setOptions(option.filter(option => option !== removeScreen));
         setSelectedOption('');
+        removeScreenFromDatabase(removeScreen);
       }
     }else {
       window.alert("Screen name is required. Please try again.")
@@ -291,6 +370,7 @@ export default function Home() {
     const copyScreen = prompt(`Copying the content of ${selectedOption} as`);
     if (copyScreen) {
       setOptions([...option, copyScreen]);
+      copyScreenToDatabase(copyScreen)
     } else {
       window.alert("Screen name is required. Please try again.")
     }
@@ -302,11 +382,98 @@ export default function Home() {
         window.alert("Please enter another name. 'Screen 1' is not allowed.");
       } else {
         setOptions([...option, screenName]);
+        addScreenToDatabase(selectedOption , screenName);
       }
     } else {
       window.alert("Screen name is required. Please try again.");
     }
   };
+  const addScreenToDatabase = (screenName: string) => {
+    const newScreen = {
+        name: screenName,
+    };
+    addScreen(newScreen)
+        .then(() => {
+            fetchScreens();
+        })
+        .catch((error) => {
+            console.error('Error adding screen:', error);
+        });
+  };
+  const removeScreenFromDatabase = (removeScreen: string) => {
+    openDatabase().then((db) => {
+      const transaction = db.transaction(['screens'], 'readwrite');
+      const objectStore = transaction.objectStore('screens');
+      const request = objectStore.index('name').get(removeScreen);
+      
+      request.onsuccess = () => {
+          const screen = request.result;
+          if (screen) {
+              const deleteRequest = objectStore.delete(screen.id);
+              deleteRequest.onsuccess = () => {
+                  fetchScreens();
+              };
+              deleteRequest.onerror = () => {
+                  console.error('Error removing screen from database');
+              };
+          } else {
+              console.error('Screen not found in the database');
+          }
+      };
+
+      request.onerror = () => {
+          console.error('Error finding screen in the database');
+      };
+    }).catch((error) => {
+        console.error('Error opening database:', error);
+    });
+  }
+  const copyScreenToDatabase = (selectedOption: string , copyScreen: undefined) => {
+    openDatabase().then((db) => {
+      const transaction = db.transaction(['screens'], 'readwrite');
+      const objectStore = transaction.objectStore('screens');
+      const request = objectStore.index('name').get(selectedOption);
+      request.onsuccess = () => {
+          const originalScreen = request.result;
+          if (originalScreen) {
+              // Create a copy of the original screen with a new name
+              const copiedScreen = { ...originalScreen, name: copyScreen };
+              const addRequest = objectStore.add(copiedScreen);
+              addRequest.onsuccess = () => {
+                  fetchScreens();
+              };
+              addRequest.onerror = () => {
+                  console.error('Error adding copied screen to database');
+              };
+          } else {
+              console.error('Original screen not found in the database');
+          }
+      };
+
+      request.onerror = () => {
+          console.error('Error finding original screen in the database');
+      };
+  }).catch((error) => {
+      console.error('Error opening database:', error);
+  });
+
+  }
+  const fetchScreens = () => {
+    getScreens()
+        .then((screens) => {
+            setScreens(screens);
+        })
+        .catch((error) => {
+            console.error('Error fetching screens:', error);
+        });
+  };
+  useEffect(() => {
+    fetchScreens();
+  }, []);
+
+  {/* End of screen creation logic */}
+
+  
   const handleSelectChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setSelectedOption(event?.target.value);
   }
@@ -775,7 +942,7 @@ export default function Home() {
                         key={index}
                         className="w-26 h-11 mt-2 flex border m-1 flex-wrap items-center pl-3 cursor-pointer"
                         draggable
-                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragStart={(e) => handleDragStart(e, component)}
                         onDragEnd={() => handleDragEnd(index)}
                       >
                         <span className="ComponentText">{component}</span>

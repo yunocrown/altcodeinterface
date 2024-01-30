@@ -28,7 +28,15 @@ const sortOptions = [
       value: 'oldest modified date'
     }
   ];
-function ProjectConfiguration() {
+
+function ProjectConfiguration({}) {
+  const handleProjectConfigurationClick = (e: { stopPropagation: () => void; }) => {
+    e.stopPropagation();
+  }
+  const handleFinishButtonClick = () => {
+    const newProjectDiv = document.createElement('div');
+    newProjectDiv.className = "w-20 h-20 border rounded bg-transparent"
+  }
   return(
     <div className="absolute w-full h-full flex flex-wrap items-center justify-center top-0 left-0 z-30">
        <div className="w-[35rem] h-fit bg-slate-700 flex flex-wrap p-3 rounded-lg justify-center mb-4">
@@ -45,15 +53,52 @@ function ProjectConfiguration() {
             <input 
               type="text"
               placeholder="Application Name"
-              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm"
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm outline-none"
+              onClick = {handleProjectConfigurationClick}
             />
             <select
-              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm"
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm outline-none"
+              onClick={handleProjectConfigurationClick}
             >
-              <option>
-
-              </option>
+              <option className="bg-violet-700 text-white">Default</option>
+              <option className="bg-violet-700 text-white">Dark Theme</option>
+              <option className="bg-violet-700 text-white">Light Theme</option>
             </select>
+            <select
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm outline-none"
+              onClick={handleProjectConfigurationClick}
+            >
+              <option className="bg-violet-700 text-white">Andriod 5.0-5.0.2 (API 21)</option>
+              <option className="bg-violet-700 text-white">Andriod 5.1-5.1.1 (API 22)</option>
+              <option className="bg-violet-700 text-white">Andriod 6.0-6.0.1 (API 23)</option>
+              <option className="bg-violet-700 text-white">Andriod 7.0 (API 24)</option>
+              <option className="bg-violet-700 text-white">Andriod 7.1-5.1.2 (API 25)</option>
+              <option className="bg-violet-700 text-white">Andriod 8.0 (API 26)</option>
+              <option className="bg-violet-700 text-white">Andriod 8.1 (API 27)</option>
+              <option className="bg-violet-700 text-white">Andriod 9.0 (API 28)</option>
+              <option className="bg-violet-700 text-white">Andriod 10.0 (API 29)</option>
+            </select>
+            <input 
+              type="text"
+              placeholder="Enter Package Name"
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm outline-none"
+              onClick={handleProjectConfigurationClick}
+            />
+            <input 
+              type="color"
+              className = "w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm outline-none"
+              onClick={handleProjectConfigurationClick}
+            />
+            <input 
+              type="color"
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm outline-none"
+              onClick={handleProjectConfigurationClick}
+            />
+            <input 
+              type="color"
+              className="w-11/12 h-10 border rounded border-violet-400 bg-transparent text-white mt-1 pl-2 text-sm outline-none"
+              onClick={handleProjectConfigurationClick}
+            />
           </div>
         </div>
         <div className="w-full h-10 flex flex-wrap place-content-between top-3 relative">
@@ -72,6 +117,7 @@ function ProjectConfiguration() {
             </button>
             <button
               className="w-20 border h-8 rounded border-violet-400 flex flex-wrap items-center justify-center mr-3"
+              onClick={handleFinishButtonClick}
             >
               Finish
             </button>
@@ -84,6 +130,7 @@ function ProjectConfiguration() {
 function Popup({setShowPopup}) {
   const [showProjectConfiguration , setShowProjectConfiguration] = useState(true); //isko false kar dena yaad se
   const [inputEmpty , setInputEmpty] = useState(false);
+  const [enteredValue  , setEnteredValue] = useState('');
 
   const handleCreateNextClick = (e: { stopPropagation: () => void; }) => {
     e.stopPropagation();
@@ -102,6 +149,7 @@ function Popup({setShowPopup}) {
       setInputEmpty(false); 
     }
   }
+
   return (
       <div className="absolute w-full h-full flex flex-wrap items-center justify-center top-[-10rem] left-0 z-30">
         <div className="w-[35rem] h-fit bg-slate-700 flex flex-wrap p-3 rounded-lg justify-center mb-4">
@@ -141,7 +189,9 @@ function Popup({setShowPopup}) {
             >
             Create 
             {showProjectConfiguration &&(
-              <ProjectConfiguration />
+              <ProjectConfiguration 
+                
+              />
             )}
           </div>
         </div>
