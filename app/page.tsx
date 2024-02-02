@@ -1,9 +1,10 @@
 'use client'
-import { rejects } from "assert";
-import { unique } from "next/dist/build/utils";
+
+{/* Imports */}
 import Link from "next/link";
 import React , { useState , useEffect , useRef, SetStateAction } from "react";
 
+{/* Device list */}
 const devices = {
   'Samsung Galaxy S9' : {
     image : '/samsungS9.png',
@@ -58,6 +59,8 @@ function DropTargetForDevice({selected}) {
     return <MicrosoftSurfaceDropTarget />
   }
 }
+
+{/* DropTarget Mentioned Here */}
 function MicrosoftSurfaceDropTarget() {
   return( 
     <div className="w-[22.5rem] h-[47rem] bg-pink-600 items-center justify-center flex flex-wrap">
@@ -136,22 +139,23 @@ function S9DropTarget() {
     event.preventDefault();
     const componentType = event.dataTransfer.getData("text/plain");
     const dropTarget = document.querySelector(".DropTarget");
+    const AllComponents = document.querySelector(".AllComponents");
     
     if (componentType === "Button") {
       const buttonDroppedDiv = document.createElement("div");
+      const elementDropped = document.createElement('div');
+      elementDropped.className = "w-60 text-sm text-white border border-violet-500 h-11 border border-violet-400 text-white flex flex-wrap items-center pl-4 mt-3 ml-3 rounded"
+      elementDropped.innerHTML = `
+        value = "button"
+      `
+      elementDropped.textContent = "Button"
       buttonDroppedDiv.className = "w-fit h-fit text-sm border bg-violet-500 text-white"
       buttonDroppedDiv.textContent = "Button dropped";
-      console.log("Button dropped")
       dropTarget.appendChild(buttonDroppedDiv);
+      AllComponents?.appendChild(elementDropped);
     }
   }
-  document.addEventListener("DOMContentLoaded",function() {
-    const dropTarget = document.querySelector(".DropTarget");
-    dropTarget.addEventListener("drop", handleComponentDrop);
-    dropTarget.addEventListener("dragover", function(event) {
-        event.preventDefault();
-    });
-  })
+
   const handleComponentDragOver = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
   }
@@ -201,7 +205,232 @@ function S9DropTarget() {
     </div>
   )
 }
+function PropertiesDisplay({propertyDisplay , selectedColor  , handleBackgroundColor , handleAssetsUpload , handlePreviewButtonClick , handlePreviewButtonCloseClick}) {
+  if(propertyDisplay === 'screen') {
+    return <ScreenDisplay 
+      selectedColor = {selectedColor}
+      handleBackgroundColor = {handleBackgroundColor}
+      handleAssetsUpload = {handleAssetsUpload}
+      handlePreviewButtonClick = {handlePreviewButtonClick}
+      handlePreviewButtonCloseClick = {handlePreviewButtonCloseClick}
+    />
+  }
+  if(propertyDisplay === 'component') {
+    return <ComponentDisplay />
+  }
+  if(propertyDisplay === 'button') {
+    return <ButtonDisplay />
+  }
+}
+function ButtonDisplay() {
+  return (
+    <div>
+      Mine
+    </div>
+  )
+}
+function ScreenDisplay(selectedColor , handleBackgroundColor , handleAssetsUpload , handlePreviewButtonClick) {
+  const [selectedAlignment , showSelectedAlignment] = useState('left');
 
+  return (
+    <div>
+                        <div className="w-full h-full flex flex-wrap justify-center gap-2">
+                          <div className="w-60 h-9 relative">
+                            <input 
+                              type="text"
+                              className="bg-transparent border rounded h-9 w-60 text-white text-sm p-1"
+                              placeholder="About Screen"
+                            />
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
+                            <input 
+                              type="color"
+                              className="rounded-full w-6 border-none outline-none cursor-pointer"
+                            />
+                            <p className="w-fit pl-2 text-white text-sm">About Screen BGColor</p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              About Screen Light Theme
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 relative">
+                            <input 
+                              type="text"
+                              className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                              placeholder="About Screen title"
+                            />
+                          </div>
+                          <div className="w-60 h-9">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                              // onChange={handleHorizontalAlignment}
+                            >
+                              <option value= "Option1" className="text-black">Left : 1</option>
+                              <option value= "Option2" className="text-black">Center : 3</option>
+                              <option value= "Option3" className="text-black">Right : 2</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Option1" className="text-black">Top : 1</option>
+                              <option value= "Option2" className="text-black">Center : 2</option>
+                              <option value= "Option3" className="text-black">Botton : 3</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
+                            <input 
+                              type="color"
+                              className="rounded-full w-6 border-none outline-none cursor-pointer"
+                              value={selectedColor}
+                              onChange={handleBackgroundColor}
+                            />
+                            <p className="w-fit pl-2 text-white text-sm">Background Color</p>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-40 h-full bg-transparent text-white text-sm pl-2"
+                            >
+                              <option value="">None</option>
+                            </select>
+                            <div className="w-[4.6rem] h-full flex flex-wrap items-center justify-center border border-t-0 border-b-0 border-r-0 gap-4">
+                              <img 
+                                src="/upload.svg"
+                                alt="uploadFiles"
+                                className="w-5 h-5 hover:bg-violet-800 rounded cursor-pointer"
+                                title="uploadFiles"
+                                onClick={handleAssetsUpload}
+                              />
+                              <img 
+                                src="/gallery_thumbnail.svg"
+                                alt="previewOption"
+                                className="w-5 h-5 hover:bg-violet-800 rounded cursor-pointer"
+                                onClick={handlePreviewButtonClick}
+                              />
+                            </div>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Default" className="text-white bg-violet-700">Default</option>
+                              <option value= "Fade" className="text-white bg-violet-700">Fade</option>
+                              <option value= "Zoom" className="text-white bg-violet-700">Zoom</option>
+                              <option value= "Slide Horizontal" className="text-white bg-violet-700">Slide Horizontal</option>
+                              <option value= "Slide Vertical" className="text-white bg-violet-700">Slide Vertical</option>
+                              <option value= "None" className="text-white bg-violet-700">None</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
+                            <input 
+                              type="color"
+                              className="rounded-full w-6 border-none outline-none cursor-pointer"
+                            />
+                            <p className="w-fit pl-2 text-white text-sm">Navigation Bar Color</p>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Default" className="text-white bg-violet-700">Default</option>
+                              <option value= "Fade" className="text-white bg-violet-700">Fade</option>
+                              <option value= "Zoom" className="text-white bg-violet-700">Zoom</option>
+                              <option value= "Slide Horizontal" className="text-white bg-violet-700">Slide Horizontal</option>
+                              <option value= "Slide Vertical" className="text-white bg-violet-700">Slide Vertical</option>
+                              <option value= "None" className="text-white bg-violet-700">None</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Unspecified" className="text-white bg-violet-700">Unspecified</option>
+                              <option value= "Behind" className="text-white bg-violet-700">Behind</option>
+                              <option value= "Full Sensor" className="text-white bg-violet-700">Zoom</option>
+                              <option value= "Landscape" className="text-white bg-violet-700">Slide Horizontal</option>
+                              <option value= "No Sensor" className="text-white bg-violet-700">Slide Vertical</option>
+                              <option value= "Portrait" className="text-white bg-violet-700">None</option>
+                              <option value= "Reverse Landscape" className="text-white bg-violet-700">None</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Scrollable
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Show Menu Option
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Show Status Bar
+                            </p>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap">
+                              <input 
+                                type="text"
+                                className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                                placeholder="Title"
+                              />
+                          </div>
+                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
+                            <select
+                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
+                            >
+                              <option value= "Unspecified" className="text-white bg-violet-700">Default</option>
+                              <option value= "Behind" className="text-white bg-violet-700">Sans Serif</option>
+                              <option value= "Full Sensor" className="text-white bg-violet-700">Monospace</option>
+                              <option value= "Landscape" className="text-white bg-violet-700">Roboto Thin</option>
+                              <option value= "No Sensor" className="text-white bg-violet-700">Roboto Regular</option>
+                            </select>
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap">
+                              <input 
+                                type="text"
+                                className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
+                                placeholder="Title Bar Subtitle"
+                              />
+                          </div>
+                          <div className="w-60 h-9 flex flex-wrap items-center">
+                            <input 
+                              type="checkbox"
+                              className="bg-transparent border outline-none"
+                            />
+                            <p className="text-white text-sm pl-2">
+                              Title Visible
+                            </p>
+                          </div>
+                        </div> 
+    </div>
+  )
+}
+function ComponentDisplay() {
+  return (
+    <div>
+      Hiya
+    </div>
+  )
+}
 export default function Home() {
   const [showProject, setShowProject] = useState(false);
   const [showTest, setShowTest] = useState(false);
@@ -221,8 +450,12 @@ export default function Home() {
   const [selectVisibility , setSelectVisibility]  = useState('All Components');
   const [selectedColor, setSelectedColor] = useState('#fff');
   const [droppedComponent, setDroppedComponent] = useState(null);
-  const [showPreviewScreen , setShowPreviewScreen] = useState(false);
+  const [showPreviewScreen , setShowPreviewScreen] = useState(true);
+  const [properties , setProperties] = useState('screen');
 
+  const handlePropertiesClick = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+    setProperties(e.target.value);
+  }
   const handleDragEnd = (index: number | React.SetStateAction<null>) => {
     setDroppedComponent(index);
   }
@@ -388,7 +621,7 @@ const getScreens = () => {
       window.alert("Screen name is required. Please try again.");
     }
   };
-  const addScreenToDatabase = (screenName: string) => {
+  const addScreenToDatabase = (selectOption: string , screenName: string) => {
     const newScreen = {
         name: screenName,
     };
@@ -436,7 +669,6 @@ const getScreens = () => {
       request.onsuccess = () => {
           const originalScreen = request.result;
           if (originalScreen) {
-              // Create a copy of the original screen with a new name
               const copiedScreen = { ...originalScreen, name: copyScreen };
               const addRequest = objectStore.add(copiedScreen);
               addRequest.onsuccess = () => {
@@ -518,11 +750,12 @@ const getScreens = () => {
     const itemText = document.querySelector(".ItemText");
     const component = document.querySelector(".Component");
     const componentText = document.querySelector(".ComponentText");
-    const itemTextclasses = "flex"
+    const itemTextclasses = "Block"
     const componentTextclasses = "hidden border-none"
     const Itemclasses = "w-[16.5rem] border border-t-0 border-l-0 border-r-1 ease-in-out duration-800"
     const Componentclasses = "w-[3.5rem] h-[46rem] overflow-y-scroll ease-in-out duration-800";
     itemTextclasses.split(' ').forEach(c => {
+      itemText?.classList.remove("hidden")
       itemText?.classList.add(c);
     })
     componentTextclasses.split(' ').forEach(c => {
@@ -540,12 +773,13 @@ const getScreens = () => {
     const itemText = document.querySelector(".ItemText");
     const component = document.querySelector(".Component");
     const componentText = document.querySelector(".ComponentText");
-    const itemTextclasses = "flex"
+    const itemTextclasses = "Block"
     const componentTextclasses = "hidden border-none"
     const Itemclasses = "w-[16.5rem] border border-t-0 border-l-0 border-r-1"
     const Componentclasses = "w-[3.5rem] h-[46rem]";
     itemTextclasses.split(' ').forEach(c => {
       itemText?.classList.remove(c);
+      itemText?.classList.add("hidden")
     })
     componentTextclasses.split(' ').forEach(c => {
       componentText?.classList.remove(c);
@@ -558,7 +792,7 @@ const getScreens = () => {
     })
   }
   const handlePreviewButtonClick = () => {
-    setShowPreviewScreen(true);
+    setShowPreviewScreen(false);
   }
   const handlePreviewButtonCloseClick = () => {
     setShowPreviewScreen(false);
@@ -987,269 +1221,68 @@ const getScreens = () => {
                       />
             </div>
         </div>
+
         {/* Components display */}
         <div className="w-[21rem] h-full bg-slate-900 flex flex-wrap">
-                      <div className="w-full h-10 border border-violet-400 border-l-0 border-b-1 border-t-0 flex flex-wrap items-center gap-4">
-                      <div className="w-52 h-8 bg-violet-500 text-white rounded ml-3 flex flex-wrap items-center justify-center text-sm">
-                        <select
-                            value={selectVisibility}
-                            onChange={handleSelectVisibility}
-                            className="w-52 h-6 bg-transparent outline-0"
-                          >
-                            <option className="bg-violet-700" value="">All Components</option>
-                            <option className="bg-violet-700" value="option1">Visibile Components</option>
-                            <option className="bg-violet-700" value="option2">Non-Visible Components</option>
-                          </select>
-                      </div>
-                      <div className="w-24 h-6 flex flex-wrap items-center gap-6 ">
-                        <img 
-                          src="/border_color.svg"
-                          alt="rename"
-                          title="rename"
-                          width={20}
-                          height={20}
-                          className="cursor-pointer"
-                        />
-                        <img 
-                          src="/delete.svg"
-                          alt="delete"
-                          title="delete"
-                          width={20}
-                          height={20}
-                          className="cursor-pointer"
-                        />
-                      </div>
-                      </div>
-                      <div className="w-full h-[46rem] bg-slate-900 AllComponents flex flex-wrap border-violet-400 border-l-0 border-t-0 border-r-0">
-                        <div ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap items-center pl-4 mt-3 ml-3 rounded" id="Screen">
-                        
-                        </div>
-                      </div>
+          <div className="w-full h-10 border border-violet-400 border-l-0 border-b-1 border-t-0 flex flex-wrap items-center gap-4">
+            <div className="w-52 h-8 bg-violet-500 text-white rounded ml-3 flex flex-wrap items-center justify-center text-sm">
+              <select
+                  value={selectVisibility}
+                  onChange={handleSelectVisibility}
+                  className="w-52 h-6 bg-transparent outline-0"
+                >
+                  <option className="bg-violet-700" value="">All Components</option>
+                  <option className="bg-violet-700" value="option1">Visibile Components</option>
+                  <option className="bg-violet-700" value="option2">Non-Visible Components</option>
+                </select>
+            </div>
+            <div className="w-24 h-6 flex flex-wrap items-center gap-6 ">
+              <img 
+                src="/border_color.svg"
+                alt="rename"
+                title="rename"
+                width={20}
+                height={20}
+                className="cursor-pointer"
+              />
+              <img 
+                src="/delete.svg"
+                alt="delete"
+                title="delete"
+                width={20}
+                height={20}
+                className="cursor-pointer"
+              />
+            </div>
+          </div>
+          <div className="w-full h-[46rem] bg-slate-900 flex flex-wrap border-violet-400 border-l-0 border-t-0 border-r-0">
+            <button ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap AllComponents items-center pl-4 mt-3 ml-3 rounded" id="Screen" value="screen" onClick={handlePropertiesClick} ></button>
+          </div>
         </div>
 
         {/* Screen Properties */}
         <div className="w-[19.95rem] h-full bg-slate-900 flex flex-wrap">
-                      <div className="w-full h-10 border border-violet-400 border-t-0 border-l-0 border-r-0 border-b-1 flex flex-wrap items-center">
-                        <p className="w-[18rem] flex flex-wrap text-white">
-                          <span ref={visibleComponentProperties} className="w-fit ml-3 text-white mr-2"></span> 
-                        Properties
-                        </p>
-                      </div>
-                      <div className="w-full h-[46rem] border border-violet-400 border-t-0 border-l-1 border-r-0 overflow-y-scroll">
-                        <div className="w-full h-10 flex flex-wrap mb-3  items-center border border-t-0 border-l-0 border-r-0 border-violet-400">
-                          <span className="text-white ml-3 text-sm">
-                            Common Properties
-                          </span>
-                        </div>
-                        <div className="w-full h-full flex flex-wrap justify-center gap-2">
-                          <div className="w-60 h-9 relative">
-                            <input 
-                              type="text"
-                              className="bg-transparent border rounded h-9 w-60 text-white text-sm p-1"
-                              placeholder="About Screen"
-                            />
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
-                            <input 
-                              type="color"
-                              className="rounded-full w-6 border-none outline-none cursor-pointer"
-                            />
-                            <p className="w-fit pl-2 text-white text-sm">About Screen BGColor</p>
-                          </div>
-                          <div className="w-60 h-9 flex flex-wrap items-center">
-                            <input 
-                              type="checkbox"
-                              className="bg-transparent border outline-none"
-                            />
-                            <p className="text-white text-sm pl-2">
-                              About Screen Light Theme
-                            </p>
-                          </div>
-                          <div className="w-60 h-9 relative">
-                            <input 
-                              type="text"
-                              className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
-                              placeholder="About Screen title"
-                            />
-                          </div>
-                          <div className="w-60 h-9">
-                            <select
-                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
-                            >
-                              <option value= "Option1" className="text-black">Left : 1</option>
-                              <option value= "Option2" className="text-black">Center : 3</option>
-                              <option value= "Option3" className="text-black">Right : 2</option>
-                            </select>
-                          </div>
-                          <div className="w-60 h-9">
-                            <select
-                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
-                            >
-                              <option value= "Option1" className="text-black">Top : 1</option>
-                              <option value= "Option2" className="text-black">Center : 2</option>
-                              <option value= "Option3" className="text-black">Botton : 3</option>
-                            </select>
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
-                            <input 
-                              type="color"
-                              className="rounded-full w-6 border-none outline-none cursor-pointer"
-                              value={selectedColor}
-                              onChange={handleBackgroundColor}
-                            />
-                            <p className="w-fit pl-2 text-white text-sm">Background Color</p>
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
-                            <select
-                              className="w-40 h-full bg-transparent text-white text-sm pl-2"
-                            >
-                              <option value="">None</option>
-                            </select>
-                            <div className="w-[4.6rem] h-full flex flex-wrap items-center justify-center border border-t-0 border-b-0 border-r-0 gap-4">
-                              <img 
-                                src="/upload.svg"
-                                alt="uploadFiles"
-                                className="w-5 h-5 hover:bg-violet-800 rounded cursor-pointer"
-                                title="uploadFiles"
-                                onClick={handleAssetsUpload}
-                              />
-                              <img 
-                                src="/gallery_thumbnail.svg"
-                                alt="previewOption"
-                                className="w-5 h-5 hover:bg-violet-800 rounded cursor-pointer"
-                                onClick={handlePreviewButtonClick}
-                              />
-                              {showPreviewScreen &&
-                                <div className="absolute top-0 left-0 w-full h-full flex flex-wrap z-40 bg-gray-100 justify-center">
-                                  <div className="w-11/12 h-10 mt-3 bg-slate-600 flex flex-wrap items-center place-content-between rounded">
-                                    <span className="w-fit h-full text-white flex flex-wrap items-center pl-4">
-                                      Preview Screen
-                                    </span>
-                                    <img
-                                      src="closeWhite.png"
-                                      alt="close"
-                                      className="w-7 h-7 mr-4 cursor-pointer"
-                                      onClick={handlePreviewButtonCloseClick}
-                                    />
-                                  </div>
-                                  <div className="w-full h-full flex flex-wrap items-center justify-center">
-                                    <img 
-                                      src=""
-                                      alt="currentPreviewImage"
-                                      className="object-cover ImagePreview"
-                                    />
-                                  </div>
-                                </div>
-                              }
-                            </div>
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
-                            <select
-                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
-                            >
-                              <option value= "Default" className="text-white bg-violet-700">Default</option>
-                              <option value= "Fade" className="text-white bg-violet-700">Fade</option>
-                              <option value= "Zoom" className="text-white bg-violet-700">Zoom</option>
-                              <option value= "Slide Horizontal" className="text-white bg-violet-700">Slide Horizontal</option>
-                              <option value= "Slide Vertical" className="text-white bg-violet-700">Slide Vertical</option>
-                              <option value= "None" className="text-white bg-violet-700">None</option>
-                            </select>
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center pl-3 relative rounded">
-                            <input 
-                              type="color"
-                              className="rounded-full w-6 border-none outline-none cursor-pointer"
-                            />
-                            <p className="w-fit pl-2 text-white text-sm">Navigation Bar Color</p>
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
-                            <select
-                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
-                            >
-                              <option value= "Default" className="text-white bg-violet-700">Default</option>
-                              <option value= "Fade" className="text-white bg-violet-700">Fade</option>
-                              <option value= "Zoom" className="text-white bg-violet-700">Zoom</option>
-                              <option value= "Slide Horizontal" className="text-white bg-violet-700">Slide Horizontal</option>
-                              <option value= "Slide Vertical" className="text-white bg-violet-700">Slide Vertical</option>
-                              <option value= "None" className="text-white bg-violet-700">None</option>
-                            </select>
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
-                            <select
-                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
-                            >
-                              <option value= "Unspecified" className="text-white bg-violet-700">Unspecified</option>
-                              <option value= "Behind" className="text-white bg-violet-700">Behind</option>
-                              <option value= "Full Sensor" className="text-white bg-violet-700">Zoom</option>
-                              <option value= "Landscape" className="text-white bg-violet-700">Slide Horizontal</option>
-                              <option value= "No Sensor" className="text-white bg-violet-700">Slide Vertical</option>
-                              <option value= "Portrait" className="text-white bg-violet-700">None</option>
-                              <option value= "Reverse Landscape" className="text-white bg-violet-700">None</option>
-                            </select>
-                          </div>
-                          <div className="w-60 h-9 flex flex-wrap items-center">
-                            <input 
-                              type="checkbox"
-                              className="bg-transparent border outline-none"
-                            />
-                            <p className="text-white text-sm pl-2">
-                              Scrollable
-                            </p>
-                          </div>
-                          <div className="w-60 h-9 flex flex-wrap items-center">
-                            <input 
-                              type="checkbox"
-                              className="bg-transparent border outline-none"
-                            />
-                            <p className="text-white text-sm pl-2">
-                              Show Menu Option
-                            </p>
-                          </div>
-                          <div className="w-60 h-9 flex flex-wrap items-center">
-                            <input 
-                              type="checkbox"
-                              className="bg-transparent border outline-none"
-                            />
-                            <p className="text-white text-sm pl-2">
-                              Show Status Bar
-                            </p>
-                          </div>
-                          <div className="w-60 h-9 flex flex-wrap">
-                              <input 
-                                type="text"
-                                className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
-                                placeholder="Title"
-                              />
-                          </div>
-                          <div className="w-60 h-9 border flex flex-wrap items-center rounded">
-                            <select
-                              className="w-full h-full bg-transparent text-white border rounded text-sm pl-2"
-                            >
-                              <option value= "Unspecified" className="text-white bg-violet-700">Default</option>
-                              <option value= "Behind" className="text-white bg-violet-700">Sans Serif</option>
-                              <option value= "Full Sensor" className="text-white bg-violet-700">Monospace</option>
-                              <option value= "Landscape" className="text-white bg-violet-700">Roboto Thin</option>
-                              <option value= "No Sensor" className="text-white bg-violet-700">Roboto Regular</option>
-                            </select>
-                          </div>
-                          <div className="w-60 h-9 flex flex-wrap">
-                              <input 
-                                type="text"
-                                className="bg-transparent border rounded h-9 w-60 mt-3 text-white text-sm p-1"
-                                placeholder="Title Bar Subtitle"
-                              />
-                          </div>
-                          <div className="w-60 h-9 flex flex-wrap items-center">
-                            <input 
-                              type="checkbox"
-                              className="bg-transparent border outline-none"
-                            />
-                            <p className="text-white text-sm pl-2">
-                              Title Visible
-                            </p>
-                          </div>
-                        </div>  
-                      </div>
+          <div className="w-full h-10 border border-violet-400 border-t-0 border-l-0 border-r-0 border-b-1 flex flex-wrap items-center">
+            <p className="w-[18rem] flex flex-wrap text-white">
+              <span ref={visibleComponentProperties} className="w-fit ml-3 text-white mr-2"></span> 
+            Properties
+            </p>
+          </div>
+          <div className="w-full h-[46rem] border border-violet-400 border-t-0 border-l-1 border-r-0 overflow-y-scroll">
+            <div className="w-full h-10 flex flex-wrap mb-3  items-center border border-t-0 border-l-0 border-r-0 border-violet-400">
+              <span className="text-white ml-3 text-sm">
+                Common Properties
+              </span>
+            </div>
+            <PropertiesDisplay 
+              propertyDisplay = {properties}
+              selectedColor = {selectedColor}
+              handleBackgroundColor = {handleBackgroundColor}
+              handleAssetsUpload = {handleAssetsUpload}
+              handlePreviewButtonClick = {handlePreviewButtonClick}
+              handlePreviewButtonCloseClick = {handlePreviewButtonCloseClick}
+            />
+          </div>
         </div>
       </div>
     </div>
