@@ -143,11 +143,9 @@ function S9DropTarget() {
     
     if (componentType === "Button") {
       const buttonDroppedDiv = document.createElement("div");
-      const elementDropped = document.createElement('div');
-      elementDropped.className = "w-60 text-sm text-white border border-violet-500 h-11 border border-violet-400 text-white flex flex-wrap items-center pl-4 mt-3 ml-3 rounded"
-      elementDropped.innerHTML = `
-        value = "button"
-      `
+      const elementDropped = document.createElement('button');
+      elementDropped.className = "w-60 text-sm text-white border border-violet-500 h-11 border border-violet-400 text-white flex flex-wrap items-center pl-4 mt-5 ml-3 rounded relative"
+      elementDropped.setAttribute("value" , "button");
       elementDropped.textContent = "Button"
       buttonDroppedDiv.className = "w-fit h-fit text-sm border bg-violet-500 text-white"
       buttonDroppedDiv.textContent = "Button dropped";
@@ -205,6 +203,8 @@ function S9DropTarget() {
     </div>
   )
 }
+
+{/* Added Screen properties here */}
 function PropertiesDisplay({propertyDisplay , selectedColor  , handleBackgroundColor , handleAssetsUpload , handlePreviewButtonClick , handlePreviewButtonCloseClick}) {
   if(propertyDisplay === 'screen') {
     return <ScreenDisplay 
@@ -224,8 +224,50 @@ function PropertiesDisplay({propertyDisplay , selectedColor  , handleBackgroundC
 }
 function ButtonDisplay() {
   return (
-    <div>
-      Mine
+    <div className="w-full h-full flex flex-wrap justify-center gap-2">
+      <div className="w-60 h-9 relative rounded border flex flex-wrap items-center pl-3">
+        <input 
+          type="color"
+          className="rounded-full w-6 border-none outline-none cursor-pointer"
+        />
+        <p className="w-fit pl-2 text-white text-sm">
+          Button BGColor
+        </p>
+      </div>
+      <div className="w-60 h-9 flex flex-wrap items-center">
+        <input 
+          type="checkbox"
+          className="bg-transparent border outline-none"
+        />
+        <p className="text-white text-sm pl-2">
+          Enabled
+        </p>
+      </div>
+      <div className="w-60 h-9 flex flex-wrap items-center">
+        <input 
+          type="checkbox"
+          className="bg-transparent border outline-none"
+        />
+        <p className="text-white text-sm pl-2">
+          Font Bold 
+        </p>
+      </div>
+      <div className="w-60 h-9 flex flex-wrap items-center">
+        <input 
+          type="checkbox"
+          className="bg-transparent border outline-none"
+        />
+        <p className="text-white text-sm pl-2">
+          Font Italic
+        </p>
+      </div>
+      <div className="w-60 h-9 relative">
+        <input 
+          type="text"
+          className="bg-transparent border rounded h-9 w-60 text-white text-sm p-1"
+          placeholder="About Screen"
+        />
+      </div>
     </div>
   )
 }
@@ -427,7 +469,13 @@ function ScreenDisplay(selectedColor , handleBackgroundColor , handleAssetsUploa
 function ComponentDisplay() {
   return (
     <div>
-      Hiya
+      <div className="w-full h-full flex flex-wrap justify-center gap-2">
+        <input 
+          type="text"
+          placeholder="Rename the component"
+
+        />
+      </div>
     </div>
   )
 }
@@ -1256,7 +1304,10 @@ const getScreens = () => {
             </div>
           </div>
           <div className="w-full h-[46rem] bg-slate-900 flex flex-wrap border-violet-400 border-l-0 border-t-0 border-r-0">
-            <button ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap AllComponents items-center pl-4 mt-3 ml-3 rounded" id="Screen" value="screen" onClick={handlePropertiesClick} ></button>
+            <button ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap  items-center pl-4 mt-3 ml-3 rounded" id="Screen" value="screen" onClick={handlePropertiesClick}></button>
+            <div className="w-full h-full AllComponents pl-8">
+
+            </div>
           </div>
         </div>
 
