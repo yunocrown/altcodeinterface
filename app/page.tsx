@@ -3,6 +3,7 @@
 {/* Imports */}
 import Link from "next/link";
 import React , { useState , useEffect , useRef, SetStateAction } from "react";
+import firebase from "firebase/compat/app";
 
 {/* Device list */}
 const devices = {
@@ -153,7 +154,6 @@ function S9DropTarget() {
       AllComponents?.appendChild(elementDropped);
     }
   }
-
   const handleComponentDragOver = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
   }
@@ -536,6 +536,7 @@ export default function Home() {
   }
   const handleSelectScreenChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setSelectedScreen(e.target.value);
+    getScreenFromFirebase(selectedOption);
   };
   const filteredComponents = components.filter((component) =>
     component.toLowerCase().includes(searchTerm.toLowerCase())
@@ -583,56 +584,7 @@ export default function Home() {
   };
 
   {/*Screen management and storage code part*/}
-  const openDatabase = () => {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open('MyAppDatabase' , 1);
-      request.onerror = () => {
-        reject('Error opening Database');
-      }
-      request.onsuccess = () => {
-        resolve(request.result);
-      }
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        const objectStore = db.createObjectStore('screens' , { keypath:'id' , autoIncrement: true});
-        objectStore.createIndex('name' , 'name' , {unique: true });
-      }
-    })
-  }
-  const addScreen = (screen) => {
-    return new Promise((resolve, reject) => {
-        openDatabase().then((db) => {
-            const transaction = db.transaction(['screens'], 'readwrite');
-            const objectStore = transaction.objectStore('screens');
-            const request = objectStore.add(screen);
-            request.onsuccess = () => {
-                resolve('Screen added successfully');
-            };
-            request.onerror = () => {
-                reject('Error adding screen');
-            };
-        }).catch((error) => {
-            reject(error);
-        });
-    });
-}
-const getScreens = () => {
-  return new Promise((resolve, reject) => {
-      openDatabase().then((db) => {
-          const transaction = db.transaction(['screens'], 'readonly');
-          const objectStore = transaction.objectStore('screens');
-          const request = objectStore.getAll();
-          request.onsuccess = () => {
-              resolve(request.result);
-          };
-          request.onerror = () => {
-              reject('Error retrieving screens');
-          };
-      }).catch((error) => {
-          reject(error);
-      });
-  });
-};
+
   const handleRemoveScreenClick = () => {
     const removeScreen = prompt("Please enter the screen name to be remove");
     if (removeScreen) {
@@ -641,7 +593,6 @@ const getScreens = () => {
       } else {
         setOptions(option.filter(option => option !== removeScreen));
         setSelectedOption('');
-        removeScreenFromDatabase(removeScreen);
       }
     }else {
       window.alert("Screen name is required. Please try again.")
@@ -651,105 +602,84 @@ const getScreens = () => {
     const copyScreen = prompt(`Copying the content of ${selectedOption} as`);
     if (copyScreen) {
       setOptions([...option, copyScreen]);
-      copyScreenToDatabase(copyScreen)
     } else {
       window.alert("Screen name is required. Please try again.")
     }
   }
   const handleAddScreenClick = () => {
     const screenName = prompt("Please enter the screen name:");
+    const components = document.querySelector('.AllComponents');
+
     if (screenName) {
       if (screenName === "Screen 1") {
         window.alert("Please enter another name. 'Screen 1' is not allowed.");
       } else {
         setOptions([...option, screenName]);
-        addScreenToDatabase(selectedOption , screenName);
+        openDatabase();
+        saveDroppedComponent(screenName , components)
       }
     } else {
       window.alert("Screen name is required. Please try again.");
     }
   };
-  const addScreenToDatabase = (selectOption: string , screenName: string) => {
-    const newScreen = {
-        name: screenName,
-    };
-    addScreen(newScreen)
-        .then(() => {
-            fetchScreens();
-        })
-        .catch((error) => {
-            console.error('Error adding screen:', error);
-        });
-  };
-  const removeScreenFromDatabase = (removeScreen: string) => {
-    openDatabase().then((db) => {
-      const transaction = db.transaction(['screens'], 'readwrite');
-      const objectStore = transaction.objectStore('screens');
-      const request = objectStore.index('name').get(removeScreen);
-      
-      request.onsuccess = () => {
-          const screen = request.result;
-          if (screen) {
-              const deleteRequest = objectStore.delete(screen.id);
-              deleteRequest.onsuccess = () => {
-                  fetchScreens();
-              };
-              deleteRequest.onerror = () => {
-                  console.error('Error removing screen from database');
-              };
-          } else {
-              console.error('Screen not found in the database');
-          }
-      };
 
-      request.onerror = () => {
-          console.error('Error finding screen in the database');
-      };
-    }).catch((error) => {
-        console.error('Error opening database:', error);
+// Define IndexedDB schema
+const DB_NAME = 'screenNavigationDB';
+const DB_VERSION = 1;
+let db;
+
+const openDatabase = () => {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onerror = () => {
+            reject('Error opening database');
+        };
+
+        request.onsuccess = () => {
+            db = request.result;
+            resolve();
+        };
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            const screensStore = db.createObjectStore('screens', { keyPath: 'id' });
+            screensStore.createIndex('name', 'name', { unique: true });
+        };
     });
-  }
-  const copyScreenToDatabase = (selectedOption: string , copyScreen: undefined) => {
-    openDatabase().then((db) => {
-      const transaction = db.transaction(['screens'], 'readwrite');
-      const objectStore = transaction.objectStore('screens');
-      const request = objectStore.index('name').get(selectedOption);
-      request.onsuccess = () => {
-          const originalScreen = request.result;
-          if (originalScreen) {
-              const copiedScreen = { ...originalScreen, name: copyScreen };
-              const addRequest = objectStore.add(copiedScreen);
-              addRequest.onsuccess = () => {
-                  fetchScreens();
-              };
-              addRequest.onerror = () => {
-                  console.error('Error adding copied screen to database');
-              };
-          } else {
-              console.error('Original screen not found in the database');
-          }
-      };
+};
 
-      request.onerror = () => {
-          console.error('Error finding original screen in the database');
-      };
-  }).catch((error) => {
-      console.error('Error opening database:', error);
-  });
-
-  }
-  const fetchScreens = () => {
-    getScreens()
-        .then((screens) => {
-            setScreens(screens);
-        })
-        .catch((error) => {
-            console.error('Error fetching screens:', error);
-        });
+// Perform transactions after opening the database
+openDatabase().then(() => {
+    // Now you can perform transactions like saving and fetching components
+    const transaction = db.transaction(['screens'], 'readwrite');
+    const store = transaction.objectStore('screens');
+    
+    // Your transaction logic goes here
+}).catch((error) => {
+    console.error('Error opening database:', error);
+});
+const saveDroppedComponent = (screenId, componentData) => {
+  const transaction = db.transaction(['screens'], 'readwrite');
+  const store = transaction.objectStore('screens');
+  
+  // Get the screen by ID
+  const request = store.get(screenId);
+  
+  request.onsuccess = () => {
+      const screen = request.result;
+      if (screen) {
+          // Add the dropped component to the screen's components array
+          screen.components.push(componentData);
+          // Update the screen in the IndexedDB
+          const updateRequest = store.put(screen);
+          updateRequest.onerror = () => {
+              console.error('Error updating screen in IndexedDB');
+          };
+      }
   };
-  useEffect(() => {
-    fetchScreens();
-  }, []);
+};
+
 
   {/* End of screen creation logic */}
 

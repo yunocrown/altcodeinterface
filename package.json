@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "blockly": "^10.3.0",
+    "firebase": "^10.8.0",
     "mui-color": "^2.0.0-beta.2",
     "next": "14.0.4",
     "react": "^18",
