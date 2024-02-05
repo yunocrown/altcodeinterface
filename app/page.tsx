@@ -144,7 +144,7 @@ function S9DropTarget() {
     if (componentType === "Button") {
       const buttonDroppedDiv = document.createElement("div");
       const elementDropped = document.createElement('button');
-      elementDropped.className = "w-60 text-sm text-white border border-violet-500 h-11 border border-violet-400 text-white flex flex-wrap items-center pl-4 mt-5 ml-3 rounded relative"
+      elementDropped.className = "w-60 text-sm text-white border border-violet-500 h-11 border border-violet-400 text-white flex flex-wrap items-center pl-4 mt-2 ml-3 rounded relative"
       elementDropped.setAttribute("value" , "button");
       elementDropped.textContent = "Button"
       buttonDroppedDiv.className = "w-fit h-fit text-sm border bg-violet-500 text-white"
@@ -1305,7 +1305,7 @@ const getScreens = () => {
           </div>
           <div className="w-full h-[46rem] bg-slate-900 flex flex-wrap border-violet-400 border-l-0 border-t-0 border-r-0">
             <button ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap  items-center pl-4 mt-3 ml-3 rounded" id="Screen" value="screen" onClick={handlePropertiesClick}></button>
-            <div className="w-full h-full AllComponents pl-8">
+            <div className="w-full h-full AllComponents pl-8"  onClick={handlePropertiesClick}>
 
             </div>
           </div>
