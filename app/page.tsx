@@ -3,7 +3,6 @@
 {/* Imports */}
 import Link from "next/link";
 import React , { useState , useEffect , useRef, SetStateAction } from "react";
-import firebase from "firebase/compat/app";
 
 {/* Device list */}
 const devices = {
@@ -615,70 +614,11 @@ export default function Home() {
         window.alert("Please enter another name. 'Screen 1' is not allowed.");
       } else {
         setOptions([...option, screenName]);
-        openDatabase();
-        saveDroppedComponent(screenName , components)
       }
     } else {
       window.alert("Screen name is required. Please try again.");
     }
   };
-
-// Define IndexedDB schema
-const DB_NAME = 'screenNavigationDB';
-const DB_VERSION = 1;
-let db;
-
-const openDatabase = () => {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-        request.onerror = () => {
-            reject('Error opening database');
-        };
-
-        request.onsuccess = () => {
-            db = request.result;
-            resolve();
-        };
-
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            const screensStore = db.createObjectStore('screens', { keyPath: 'id' });
-            screensStore.createIndex('name', 'name', { unique: true });
-        };
-    });
-};
-
-// Perform transactions after opening the database
-openDatabase().then(() => {
-    // Now you can perform transactions like saving and fetching components
-    const transaction = db.transaction(['screens'], 'readwrite');
-    const store = transaction.objectStore('screens');
-    
-    // Your transaction logic goes here
-}).catch((error) => {
-    console.error('Error opening database:', error);
-});
-const saveDroppedComponent = (screenId, componentData) => {
-  const transaction = db.transaction(['screens'], 'readwrite');
-  const store = transaction.objectStore('screens');
-  
-  // Get the screen by ID
-  const request = store.get(screenId);
-  
-  request.onsuccess = () => {
-      const screen = request.result;
-      if (screen) {
-          // Add the dropped component to the screen's components array
-          screen.components.push(componentData);
-          // Update the screen in the IndexedDB
-          const updateRequest = store.put(screen);
-          updateRequest.onerror = () => {
-              console.error('Error updating screen in IndexedDB');
-          };
-      }
-  };
-};
 
 
   {/* End of screen creation logic */}
@@ -1235,8 +1175,8 @@ const saveDroppedComponent = (screenId, componentData) => {
           </div>
           <div className="w-full h-[46rem] bg-slate-900 flex flex-wrap border-violet-400 border-l-0 border-t-0 border-r-0">
             <button ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap  items-center pl-4 mt-3 ml-3 rounded" id="Screen" value="screen" onClick={handlePropertiesClick}></button>
-            <div className="w-full h-full AllComponents pl-8"  onClick={handlePropertiesClick}>
-
+            <div className="w-full h-[42.5rem] AllComponents pl-8 relative top-0 border border-b-1 border-t-0 border-l-0 border-r-0 border-violet-500"  onClick={handlePropertiesClick}>
+                      <Link href={"/experiment"}>hello</Link>
             </div>
           </div>
         </div>
