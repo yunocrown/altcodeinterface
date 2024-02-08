@@ -812,7 +812,7 @@ export default function Home() {
             </div>
           
           <div className="grid grid-cols-4 gap-8 justify-self-center self-center place-self-center mr-1.5">
-              <Link href="/community">
+              <a target="_blank" href="/community" rel="noopener noreferrer">
                 <img
                   src={"/-icon-people-community.svg"}
                   alt="image"
@@ -821,7 +821,7 @@ export default function Home() {
                   className="hover:bg-gray-700 p-1"
                   title="Community"
                 />
-              </Link>
+              </a>
               <Link href="/docs">
                 <img
                   src={"/-icon-read-the-docs.svg"}
@@ -1176,7 +1176,6 @@ export default function Home() {
           <div className="w-full h-[46rem] bg-slate-900 flex flex-wrap border-violet-400 border-l-0 border-t-0 border-r-0">
             <button ref={visibleComponentRef} className="w-72 h-11 border border-violet-400 text-white flex flex-wrap  items-center pl-4 mt-3 ml-3 rounded" id="Screen" value="screen" onClick={handlePropertiesClick}></button>
             <div className="w-full h-[42.5rem] AllComponents pl-8 relative top-0 border border-b-1 border-t-0 border-l-0 border-r-0 border-violet-500"  onClick={handlePropertiesClick}>
-                      <Link href={"/experiment"}>hello</Link>
             </div>
           </div>
         </div>

@@ -2,14 +2,11 @@
 
 import { SetStateAction, useState , useEffect, useRef } from "react";
 import Dexie from "dexie";
-import { Result } from "postcss";
-import { error } from "console";
 
 export default function page() {
     const [ draggable , setDraggable ] = useState(['button' , 'checkbox' , 'circular progress' , 'mine'])
     const [ option , setOption ] = useState(['Screen 1']);
-    const [ selectedOption , setSelectedOption ] = useState('');
-    const [screenComponents , setScreenComponent ] = useState([]);
+    const [ selectedOption , setSelectedOption ] = useState('Screen 1');
 
     const db = new Dexie('Screen Components');
     db.version(1).stores({
@@ -29,6 +26,7 @@ export default function page() {
         event.preventDefault();
         const component = event.dataTransfer.getData("text/plain");   
 
+        const selectedScreen = selectedOption;
         const DropTarget = document.querySelector(".DropTarget");
         const AllComponent = document.querySelector(".AllComponent");
 
@@ -78,7 +76,6 @@ export default function page() {
             
         }
 
-        const selectedScreen = selectedOption;
         db.transaction('rw' , 'screenData' , () => {
             db.screenData.put({ screenName: selectedScreen, components: component})
         })
@@ -90,17 +87,30 @@ export default function page() {
         setSelectedOption(event.target.value);
         const AllComponent = document.querySelector(".AllComponent");
         const selectedScreen = event.target.value;
-        db.screenData.where('screenName').equals(selectedOption).first()
-        .then((result) => {
-            const storedComponents = result.components;
+        const dropTarget = document.querySelectorAll(".DropTarget");
+
+        dropTarget.innerHTML = "";
+
+        db.screenData.where('screenName').equals(selectedOption).toArray()
+        .then((results) => {
+            const storedComponents = results.map(result => result.components);
+            console.log(storedComponents)
             AllComponent.innerHTML = "";
             storedComponents.forEach((component) => {
-
+                const componentElement = createComponentElement(component);
+               dropTarget.appendChild(componentElement)
             })
         })
         .catch((error) => {
-            //handle Error
+            console.error("Error fetching data from IndexedDB:", error);
         })
+    }
+
+    function createComponentElement(component: { name: string | null; }) {
+        const componentElement = document.createElement("div");
+        componentElement.className = "w-full h-6 border m-1 text-sm flex flex-wrap items-center justify-center"
+        componentElement.textContent = component.name;
+        return componentElement;
     }
     
     const handleAddScreen = () => {
@@ -162,7 +172,6 @@ export default function page() {
                             onDrop={handleComponentDrop}
                             onDragOver={handleComponentDragOver}
                         >
-                           
                             Drop target
                         </div>
             </div>
